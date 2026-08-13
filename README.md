@@ -1,5 +1,26 @@
 # SPPG Jeungjing — Sistem Absensi Relawan
 
+## 🆕 Update — Portal Relawan (Fase 1)
+
+Ditambahkan **8 halaman Portal baru**, murni sebagai lapisan navigasi di atas sistem yang sudah ada. Absensi, database, dan Google Apps Script **tidak diubah** — hanya `index.html` yang mendapat **satu baris tambahan** di footer (tautan ke Portal), tanpa menyentuh form/logic-nya.
+
+| File | Isi |
+|---|---|
+| `beranda.html` | Halaman utama Portal — akses cepat ke Absensi, teaser Informasi, dan menu ke semua fitur lain |
+| `profil.html` | Placeholder Profil Saya (aktif setelah sistem akun relawan tersedia) |
+| `riwayat.html` | Placeholder Riwayat Absensi |
+| `jadwal.html` | Placeholder Jadwal & Penugasan |
+| `informasi.html` | Halaman Pengumuman — sudah aktif, berisi pengumuman statis (edit langsung di HTML sampai ada panel Admin) |
+| `notifikasi.html` | Placeholder Notifikasi |
+| `pengaturan.html` | Placeholder Pengaturan Akun |
+| `bantuan.html` | Panduan penggunaan — sudah aktif |
+| `portal.css` | Stylesheet baru khusus halaman Portal (memuat `style.css`, tidak mengubahnya) |
+
+QR Code yang sudah dicetak tetap mengarah ke `index.html` seperti biasa dan tidak perlu diganti. Lihat `KONSEP FINAL PORTAL SPPG JEUNGJING` untuk roadmap Fase 2 dan seterusnya (akun & login relawan, riwayat, jadwal, dsb).
+
+---
+
+
 Sistem absensi berbasis web untuk relawan **SPPG Jeungjing**, dibangun dengan HTML/CSS/JavaScript sederhana, **Google Apps Script** sebagai backend/API, dan **Google Spreadsheet** sebagai database. Hosting menggunakan **GitHub Pages** — sepenuhnya gratis, tanpa backend berbayar.
 
 Alur inti: **1 QR Code → Absensi Relawan → Data Otomatis → Google Spreadsheet → Dashboard Admin.**

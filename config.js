@@ -9,4 +9,4 @@
 // https://script.google.com/macros/s/AKfycb..................../exec
 // ============================================================
 
-const GOOGLE_APPS_SCRIPT_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwrU87nHz_GMdXW9W_01p_JR_vbML3Wq6hiBseTk_n5S0XQETAZ_eitLzdhT6XpUUk0/exec';
+const GOOGLE_APPS_SCRIPT_WEB_APP_URL = 'GOOGLE_APPS_SCRIPT_WEB_APP_URL';
