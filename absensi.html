@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>SPPG Jeungjing — Absensi Relawan</title>
+<meta name="description" content="Sistem Absensi Relawan SPPG Jeungjing">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page-shell">
+
+  <!-- Latar dekoratif: sky-blue glow, blob lembut, dot pattern tipis. Presentasional saja. -->
+  <div class="bg-decor" aria-hidden="true">
+    <div class="blob blob--sky-top"></div>
+    <div class="blob blob--gold-left"></div>
+    <div class="blob blob--sky-bottom"></div>
+    <div class="dots"></div>
+  </div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-brand">
+        <img src="assets/logo.png" alt="Logo SPPG Jeungjing" class="header-logo">
+        <div class="header-text">
+          <h1>SPPG JEUNGJING</h1>
+          <p>Sistem Absensi Relawan</p>
+        </div>
+      </div>
+      <img src="assets/logo-bgn.png" alt="Logo Badan Gizi Nasional" class="header-logo header-logo--bgn">
+    </div>
+  </header>
+
+  <div class="layout-split">
+
+    <!-- Kolom kiri: branding, hanya tampil di desktop (lihat style.css) -->
+    <aside class="brand-panel" aria-hidden="true">
+      <div class="brand-blob brand-blob--1"></div>
+      <div class="brand-blob brand-blob--2"></div>
+      <div class="brand-dots"></div>
+      <div class="brand-panel-content">
+        <div class="brand-badges">
+          <img src="assets/logo.png" alt="" class="brand-badge-logo">
+          <span class="brand-badge-divider"></span>
+          <img src="assets/logo-bgn.png" alt="" class="brand-badge-logo">
+        </div>
+        <p class="brand-eyebrow">Program Makan Bergizi Gratis</p>
+        <h2 class="brand-heading">Melayani dengan Gizi,<br>Mengabdi dengan Hati.</h2>
+        <p class="brand-desc">SPPG Jeungjing adalah dapur pelayanan di bawah Badan Gizi Nasional yang mendukung pemenuhan gizi anak Indonesia. Sistem ini membantu mencatat kehadiran relawan secara cepat, tertib, dan akurat.</p>
+        <ul class="brand-points">
+          <li>Cepat &amp; mudah digunakan dari HP</li>
+          <li>Data tercatat otomatis &amp; aman</li>
+          <li>Mendukung operasional dapur SPPG</li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Kolom kanan (mobile: satu-satunya kolom) — KONTEN FORM TIDAK DIUBAH -->
+    <main class="container">
+
+      <section class="welcome-card">
+        <p class="welcome-greeting">Selamat Datang di Sistem Absensi Relawan SPPG Jeungjing 👋</p>
+        <p>Gunakan sistem ini untuk mencatat kehadiran dengan lebih mudah, cepat, dan tertib.</p>
+        <details class="welcome-steps">
+          <summary>Cara melakukan absensi</summary>
+          <ol>
+            <li>Pilih Divisi Anda.</li>
+            <li>Pilih Nama Anda.</li>
+            <li>Pilih Jenis Absensi.</li>
+            <li>Isi Keterangan jika diperlukan.</li>
+            <li>Tekan Kirim Absensi.</li>
+          </ol>
+          <p class="welcome-note">Mohon selalu melakukan absensi setiap datang dan pulang agar data kehadiran tetap tertib dan terdata dengan baik. Terima kasih atas kedisiplinan dan kerja sama seluruh relawan SPPG Jeungjing.</p>
+        </details>
+      </section>
+
+      <div class="progress-steps" id="progressSteps">
+        <div class="step active" data-step="1"><span>1</span>Divisi</div>
+        <div class="step" data-step="2"><span>2</span>Nama</div>
+        <div class="step" data-step="3"><span>3</span>Jenis</div>
+        <div class="step" data-step="4"><span>4</span>Kirim</div>
+      </div>
+
+      <form id="absensiForm" class="absensi-form" novalidate>
+
+        <div class="form-card" id="cardDivisi">
+          <label for="selectDivisi" class="form-label">1. Pilih Divisi</label>
+          <select id="selectDivisi" class="form-select" required>
+            <option value="" disabled selected>Memuat data divisi...</option>
+          </select>
+        </div>
+
+        <div class="form-card is-disabled" id="cardNama">
+          <label for="selectNama" class="form-label">2. Pilih Nama Relawan</label>
+          <select id="selectNama" class="form-select" required disabled>
+            <option value="" disabled selected>Tentukan divisi terlebih dahulu.</option>
+          </select>
+        </div>
+
+        <div class="form-card is-disabled" id="cardJenis">
+          <span class="form-label">3. Jenis Absensi</span>
+          <div class="jenis-options">
+            <button type="button" class="jenis-btn" data-jenis="MASUK" disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>
+              MASUK
+            </button>
+            <button type="button" class="jenis-btn" data-jenis="PULANG" disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M14 7l-5 5 5 5"/><path d="M9 12h12"/></svg>
+              PULANG
+            </button>
+          </div>
+        </div>
+
+        <div class="form-card" id="cardKeterangan">
+          <label for="selectKeterangan" class="form-label">4. Keterangan <span class="optional-tag">(opsional)</span></label>
+          <select id="selectKeterangan" class="form-select">
+            <option value="">Hadir (tidak perlu diisi)</option>
+            <option value="Izin">Izin</option>
+            <option value="Sakit">Sakit</option>
+            <option value="Dinas">Dinas</option>
+            <option value="Lainnya">Lainnya</option>
+          </select>
+          <textarea id="textKeteranganLain" class="form-textarea is-hidden" placeholder="Tuliskan keterangan Anda..." maxlength="200"></textarea>
+        </div>
+
+        <button type="submit" id="btnSubmit" class="btn-submit" disabled>Kirim Absensi</button>
+      </form>
+    </main>
+  </div>
+
+  <!-- Modal Sukses -->
+  <div class="modal-overlay is-hidden" id="successModal" role="dialog" aria-modal="true" aria-labelledby="successTitle">
+    <div class="modal-card">
+      <div class="stamp-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <h2 id="successTitle">Absensi Berhasil</h2>
+      <p id="successMessage">Terima kasih, <strong></strong>. Kehadiran Anda telah tercatat.</p>
+      <dl class="modal-details" id="successDetails"></dl>
+      <button type="button" class="btn-secondary" id="btnKembali">Kembali ke Absensi</button>
+    </div>
+  </div>
+
+  <!-- Toast Error -->
+  <div class="toast is-hidden" id="errorToast" role="alert"></div>
+
+  <!-- Loading -->
+  <div class="loading-overlay is-hidden" id="loadingOverlay">
+    <div class="spinner"></div>
+    <p id="loadingText">Memuat data...</p>
+  </div>
+
+  <footer class="site-footer">
+    <p><strong>SPPG JEUNGJING</strong> · Sistem Absensi Relawan</p>
+    <p>Digunakan untuk mendukung pencatatan kehadiran relawan secara tertib dan terorganisir.</p>
+    <a href="index.html" class="admin-link">← Kembali ke Portal</a>
+    <a href="admin.html" class="admin-link">Admin</a>
+    <p class="credit">© 2026 SPPG Jeungjing · Developed by Fatur Rizky Fahriansyah</p>
+  </footer>
+
+</div>
+
+<script src="config.js"></script>
+<script src="common.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

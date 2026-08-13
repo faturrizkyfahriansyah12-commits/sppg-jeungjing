@@ -1,5 +1,5 @@
 // ============================================================
-// SPPG JEUNGJING — LOGIC HALAMAN ABSENSI (index.html)
+// SPPG JEUNGJING — LOGIC HALAMAN ABSENSI (absensi.html)
 // Menggunakan fungsi bersama dari common.js (apiGet, apiPost, dst.)
 // ============================================================
 

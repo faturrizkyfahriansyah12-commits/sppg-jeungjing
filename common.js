@@ -1,6 +1,6 @@
 // ============================================================
 // SPPG JEUNGJING — FUNGSI BERSAMA
-// Dipakai oleh index.html (script.js) dan admin.html (admin.js)
+// Dipakai oleh absensi.html (script.js) dan admin.html (admin.js)
 // agar logic pemanggilan API tidak ditulis dua kali (modular).
 // ============================================================
 

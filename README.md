@@ -29,16 +29,21 @@ Alur inti: **1 QR Code → Absensi Relawan → Data Otomatis → Google Spreadsh
 ```
 SPPG-JEUNGJING-ABSENSI/
 │
-├── index.html              # Halaman absensi relawan (tujuan QR Code)
-├── admin.html               # Dashboard admin (dilindungi login)
-├── qrcode.html               # Halaman cetak QR Code (untuk admin)
+├── index.html              # Portal Relawan (halaman utama saat website dibuka)
+├── absensi.html             # Halaman absensi relawan (tujuan QR Code, dulunya index.html)
+├── admin.html                # Dashboard admin (dilindungi login)
+├── qrcode.html                 # Halaman cetak QR Code (untuk admin) — mengarah ke absensi.html
 │
-├── style.css                  # Desain utama (dipakai semua halaman)
-├── admin.css                   # Style tambahan khusus dashboard
+├── profil.html, riwayat.html, jadwal.html, informasi.html,
+│   notifikasi.html, pengaturan.html, bantuan.html      # Placeholder menu Portal (fase berikutnya)
+│
+├── style.css                  # Desain utama (dipakai halaman Absensi & Admin)
+├── portal.css                  # Desain khusus Portal & halaman placeholder
+├── admin.css                    # Style tambahan khusus dashboard
 │
 ├── config.js                    # 1 tempat untuk mengisi URL Apps Script
 ├── common.js                     # Fungsi API bersama (dipakai script.js & admin.js)
-├── script.js                      # Logic halaman absensi
+├── script.js                      # Logic halaman absensi (absensi.html)
 ├── admin.js                        # Logic dashboard admin
 │
 ├── assets/
@@ -71,10 +76,14 @@ SPPG-JEUNGJING-ABSENSI/
 ## 2. Cara Kerja Sistem
 
 ```
-   QR CODE (dicetak, ditempel di lokasi)
-        │
-        ▼
-   index.html  ──▶  Pilih Divisi  ──▶  Pilih Nama  ──▶  Jenis Absensi
+   Buka Website              QR CODE (dicetak, ditempel di lokasi)
+        │                              │
+        ▼                              │
+   index.html (Portal Relawan)         │
+        │                              │
+        │  klik menu "Absensi"         │
+        ▼                              ▼
+   absensi.html  ──▶  Pilih Divisi  ──▶  Pilih Nama  ──▶  Jenis Absensi
         │                                                  │
         │                                          (Masuk / Pulang)
         │                                                  ▼
@@ -145,7 +154,7 @@ Buka file `config.js`, ganti isinya dengan URL yang disalin dari Langkah 2:
 const GOOGLE_APPS_SCRIPT_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycb..................../exec';
 ```
 
-Ini satu-satunya tempat yang perlu diubah — `index.html`, `admin.html`, dan `qrcode.html` semuanya membaca URL dari file ini.
+Ini satu-satunya tempat yang perlu diubah — `absensi.html` dan `admin.html` membaca URL dari file ini. Halaman Portal (`index.html`) tidak memuat `config.js` sama sekali, sehingga Portal tetap bisa tampil meskipun `config.js` belum diisi.
 
 ---
 
@@ -170,7 +179,16 @@ Ini satu-satunya tempat yang perlu diubah — `index.html`, `admin.html`, dan `q
 
 ## 8. Panduan Penggunaan — Relawan
 
-1. Scan QR Code yang tertempel di lokasi.
+Ada dua cara masuk ke halaman Absensi:
+
+- **Lewat Portal** — buka alamat website, akan tampil **Portal Relawan** (`index.html`) terlebih dahulu, lalu klik menu **Absensi**.
+- **Lewat QR Code** — scan QR Code yang tertempel di lokasi, langsung menuju halaman Absensi (`absensi.html`) tanpa melalui Portal.
+
+Menu lain di Portal (Profil Saya, Riwayat Absensi, Jadwal & Penugasan, Informasi, Notifikasi, Pengaturan Akun, Bantuan) masih berupa halaman placeholder dan akan dikembangkan pada fase berikutnya.
+
+Langkah mengisi absensi:
+
+1. Scan QR Code yang tertempel di lokasi (atau klik menu Absensi dari Portal).
 2. Pilih **Divisi**.
 3. Pilih **Nama** (daftar nama muncul otomatis sesuai divisi yang dipilih).
 4. Pilih **Jenis Absensi**: Masuk atau Pulang.
