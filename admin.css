@@ -135,3 +135,21 @@ tbody tr:hover { background: var(--color-bg); }
   border-radius: 8px; border: 1.5px solid var(--color-border); background: var(--color-bg);
 }
 .editable-name { display: flex; align-items: center; gap: 8px; }
+
+/* ===== AKUN RELAWAN (Tahap 2) ===== */
+.akun-password-alert {
+  background: var(--color-gold-soft);
+  border: 1px solid rgba(201,162,39,0.4);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+.akun-password-alert p { margin: 0 0 10px; font-size: 13px; color: var(--color-navy); line-height: 1.6; }
+.akun-password-alert-actions { display: flex; gap: 8px; }
+.akun-inline-form {
+  display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+}
+.akun-inline-form input {
+  font-family: var(--font-main); font-size: 12.5px; padding: 7px 8px;
+  border-radius: 8px; border: 1.5px solid var(--color-border); min-width: 100px; flex: 1;
+}

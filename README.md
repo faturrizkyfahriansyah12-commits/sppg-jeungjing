@@ -17,10 +17,12 @@ Alur inti: **1 QR Code → Absensi Relawan → Data Otomatis → Google Spreadsh
 7. [Langkah 5 — Membuat QR Code](#7-langkah-5--membuat-qr-code)
 8. [Panduan Penggunaan — Relawan](#8-panduan-penggunaan--relawan)
 9. [Panduan Penggunaan — Admin](#9-panduan-penggunaan--admin)
+   - [Login & Profil Relawan (Tahap 2-4)](#9a-panduan-penggunaan--login--profil-relawan-tahap-2-4)
 10. [Keamanan](#10-keamanan)
 11. [Asumsi & Catatan Desain](#11-asumsi--catatan-desain)
 12. [Troubleshooting](#12-troubleshooting)
 13. [Pengembangan Lanjutan (opsional)](#13-pengembangan-lanjutan-opsional)
+14. [Checklist Regresi — Tahap 2-4](#14-checklist-regresi--tahap-2-4)
 
 ---
 
@@ -31,20 +33,25 @@ SPPG-JEUNGJING-ABSENSI/
 │
 ├── index.html              # Portal Relawan (halaman utama saat website dibuka)
 ├── absensi.html             # Halaman absensi relawan (tujuan QR Code, dulunya index.html)
-├── admin.html                # Dashboard admin (dilindungi login)
-├── qrcode.html                 # Halaman cetak QR Code (untuk admin) — mengarah ke absensi.html
+├── login.html                # Login relawan (Tahap 3)
+├── profil.html                 # Profil relawan — lihat identitas, ubah No HP/Email/password (Tahap 4)
+├── admin.html                    # Dashboard admin (dilindungi login)
+├── qrcode.html                     # Halaman cetak QR Code (untuk admin) — mengarah ke absensi.html
 │
-├── profil.html, riwayat.html, jadwal.html, informasi.html,
+├── riwayat.html, jadwal.html, informasi.html,
 │   notifikasi.html, pengaturan.html, bantuan.html      # Placeholder menu Portal (fase berikutnya)
 │
 ├── style.css                  # Desain utama (dipakai halaman Absensi & Admin)
-├── portal.css                  # Desain khusus Portal & halaman placeholder
+├── portal.css                  # Desain khusus Portal, Login, Profil & halaman placeholder
 ├── admin.css                    # Style tambahan khusus dashboard
 │
 ├── config.js                    # 1 tempat untuk mengisi URL Apps Script
-├── common.js                     # Fungsi API bersama (dipakai script.js & admin.js)
-├── script.js                      # Logic halaman absensi (absensi.html)
-├── admin.js                        # Logic dashboard admin
+├── common.js                     # Fungsi API bersama (dipakai semua halaman .js)
+├── auth-relawan.js                # Sesi login relawan (dipakai login.js & profil.js)
+├── script.js                       # Logic halaman absensi (absensi.html)
+├── login.js                          # Logic halaman login relawan
+├── profil.js                          # Logic halaman profil relawan
+├── admin.js                             # Logic dashboard admin
 │
 ├── assets/
 │   ├── logo.png                    # Logo resmi SPPG Jeungjing (latar transparan)
@@ -56,13 +63,16 @@ SPPG-JEUNGJING-ABSENSI/
 │   ├── 02_DATA_DIVISI.csv               # 12 divisi aktif
 │   ├── 03_DATA_ABSENSI.csv               # Hanya header
 │   ├── 04_REKAP_HARIAN.csv                # Hanya header
-│   ├── 05_REKAP_BULANAN.csv                # Hanya header
-│   └── 06_ADMIN.csv                         # Hanya header
+│   ├── 05_REKAP_BULANAN.csv                # Hanya header (historis, tidak lagi jadi tab utama — lihat Bagian 9)
+│   ├── 06_ADMIN.csv                         # Hanya header
+│   ├── 07_AKUN_RELAWAN.csv                   # Hanya header — akun login relawan (Tahap 2-4)
+│   └── 08_REKAP_2_MINGGU.csv                  # Hanya header — rekap periode gajian 2 mingguan
 │
 ├── google-apps-script/                        # Kode backend — disalin ke script.google.com
 │   ├── Code.gs                                  # Routing utama (doGet / doPost)
 │   ├── Utils.gs                                  # Konfigurasi & fungsi bantuan
 │   ├── Relawan.gs                                 # Data relawan & divisi
+│   ├── Akun.gs                                     # Akun, login & profil relawan (Tahap 2-4)
 │   ├── Absensi.gs                                  # Absensi, cegah duplikasi, rekap
 │   └── Admin.gs                                     # Login admin & sesi
 │
@@ -108,19 +118,21 @@ Frontend (GitHub Pages) hanya berkomunikasi dengan Apps Script melalui HTTP bias
 ## 3. Langkah 1 — Setup Google Spreadsheet
 
 1. Buat Google Spreadsheet baru (spreadsheet.new), beri nama misalnya **"SPPG Jeungjing — Database Absensi"**.
-2. Buat **6 sheet (tab)** dengan nama **PERSIS** seperti berikut (huruf besar/kecil dan garis bawah harus sama persis, karena dibaca oleh kode):
+2. Buat **8 sheet (tab)** dengan nama **PERSIS** seperti berikut (huruf besar/kecil dan garis bawah harus sama persis, karena dibaca oleh kode):
    - `01_DATA_RELAWAN`
    - `02_DATA_DIVISI`
    - `03_DATA_ABSENSI`
    - `04_REKAP_HARIAN`
    - `05_REKAP_BULANAN`
    - `06_ADMIN`
+   - `07_AKUN_RELAWAN`
+   - `08_REKAP_2_MINGGU`
 3. Untuk **setiap** sheet, impor file CSV yang namanya sama dari folder `seed-data/`:
    - Buka sheet tujuan (misalnya `01_DATA_RELAWAN`) → menu **File → Impor → Upload** → pilih file `.csv` yang sesuai.
    - Pada "Lokasi impor", pilih **"Ganti sheet saat ini"**, lalu klik **Impor data**.
    - `01_DATA_RELAWAN.csv` sudah berisi **47 relawan awal** sesuai data yang Anda berikan, lengkap dengan ID R001–R047.
    - `02_DATA_DIVISI.csv` sudah berisi **12 divisi**, termasuk `HEAD CHEF` yang sengaja dikosongkan (belum ada nama relawan, sesuai catatan Anda).
-   - Sheet lainnya hanya berisi baris judul kolom — akan terisi otomatis oleh sistem.
+   - Sheet lainnya (termasuk `07_AKUN_RELAWAN`) hanya berisi baris judul kolom — akan terisi otomatis oleh sistem saat Admin membuat akun relawan.
 
 ---
 
@@ -201,9 +213,20 @@ Langkah mengisi absensi:
 
 1. Buka `admin.html` (tautan "Admin" ada di bagian bawah halaman absensi), login dengan akun yang dibuat di Langkah 2.
 2. **Rekap Harian** — pilih tanggal, lihat status tiap relawan (Hadir/Terlambat/Izin/Sakit/Belum Absen), filter per divisi/status, export CSV.
-3. **Rekap Bulanan** — pilih bulan, lihat rekap jumlah hadir/terlambat/izin/sakit/tidak hadir per relawan, export CSV.
+3. **Rekap 2 Minggu** — pilih periode (tanggal awal & akhir, default otomatis ke periode 1-14 atau 15-akhir bulan berjalan sesuai tanggal hari ini), lihat rekap Hadir/Terlambat/Izin/Sakit/Tidak Hadir/Total Hari Kerja per relawan, export CSV. Ini menggantikan Rekap Bulanan sebagai tab utama karena gajian berjalan tiap 2 minggu — data Rekap Bulanan lama tetap tersimpan di sheet `05_REKAP_BULANAN` (tidak dihapus), hanya sudah tidak ditampilkan sebagai tab.
 4. **Kelola Relawan** — tambah relawan baru (ID dibuat otomatis), ubah nama, pindah divisi, aktifkan/nonaktifkan relawan.
-5. **Kelola Divisi** — tambah divisi baru; otomatis muncul di form absensi tanpa perlu mengubah kode.
+5. **Akun Relawan** (Tahap 2) — buat akun login untuk relawan yang sudah ada di Kelola Relawan: klik **+ Buat Akun**, isi username (sudah disarankan otomatis) & No HP, lalu **Buat**. Password sementara akan muncul **satu kali saja** — catat dan sampaikan langsung ke relawan. Tombol **Reset Password** dipakai jika relawan lupa password atau perangkatnya hilang.
+6. **Kelola Divisi** — tambah divisi baru; otomatis muncul di form absensi tanpa perlu mengubah kode.
+
+---
+
+## 9a. Panduan Penggunaan — Login & Profil Relawan (Tahap 2-4)
+
+1. Relawan membuka `login.html` (tautan **Profil Saya** di Portal), masuk dengan username & password yang diberikan Admin.
+2. **Login pertama**: sistem akan meminta relawan membuat password baru sebelum melanjutkan (password sementara dari Admin tidak bisa dipakai terus-menerus).
+3. Setelah masuk, relawan diarahkan ke `profil.html`: melihat identitas resmi (ID, Nama, Divisi, Status — tidak bisa diubah sendiri), melengkapi No HP & Email, dan mengganti password kapan saja.
+4. Sesi tersimpan di HP relawan (maks. 6 jam, sama seperti sesi Admin) — perlu login ulang setelah itu.
+5. **Penting**: modul ini masih berdiri sendiri dari sistem Absensi — login belum menggantikan alur pilih-Divisi-pilih-Nama di halaman Absensi. Menghubungkan keduanya direncanakan pada tahap berikutnya (Fase 7 di roadmap Anda).
 
 ---
 
@@ -215,6 +238,10 @@ Langkah mengisi absensi:
 - Sesi login admin disimpan sementara di **server** (Cache Service, maksimal 6 jam) — bukan di `localStorage` browser. Jika halaman admin di-refresh, Anda perlu login kembali; ini pilihan desain yang disengaja agar tidak ada data sesi tersimpan di perangkat.
 - Karena Apps Script dijalankan dengan "Execute as: Me", Spreadsheet **tidak perlu dibagikan secara publik** — hanya Web App URL yang bersifat publik, dan URL itu hanya mengekspos fungsi-fungsi yang memang dirancang untuk diakses (bukan akses langsung ke sheet).
 - Disarankan tetap membatasi akses "Share" pada Spreadsheet asli hanya untuk akun Google admin, sebagai lapisan keamanan tambahan.
+- Password relawan **tidak pernah** disimpan sebagai teks biasa — hanya *hash* SHA-256 (dengan salt acak per akun) yang tersimpan di `07_AKUN_RELAWAN`, sama seperti pola akun Admin.
+- Password sementara (saat akun dibuat / direset) hanya muncul **satu kali** di layar Admin — tidak disimpan di sistem sebagai teks biasa setelahnya, dan tidak bisa dilihat kembali oleh siapa pun termasuk Admin.
+- Sesi login relawan (`login.html`/`profil.html`) memakai mekanisme sama seperti Admin (Cache Service, maks. 6 jam) — namun tokennya **disimpan di `localStorage` HP relawan** (bukan sesi per-refresh seperti Admin), karena relawan diharapkan login dari perangkat pribadinya sendiri secara berulang. Tombol **Keluar** menghapus sesi baik di HP maupun di server.
+- Relawan **hanya** bisa mengubah No HP, Email, dan password miliknya sendiri — identitas resmi (ID/Nama/Divisi/Status) tetap sepenuhnya dikontrol Admin lewat tab Kelola Relawan.
 
 ---
 
@@ -248,4 +275,33 @@ Beberapa ide untuk pengembangan berikutnya — **belum diimplementasikan**, hany
 - Notifikasi WhatsApp/Telegram otomatis ke admin saat relawan absen masuk.
 - Pengaturan jam standar keterlambatan langsung dari dashboard (tanpa membuka Apps Script editor).
 - Validasi lokasi (GPS) saat absensi untuk memastikan relawan berada di lokasi dapur.
+
+---
+
+## 14. Checklist Regresi — Tahap 2-4
+
+Jalankan checklist ini setelah deploy sebelum menganggap tahap ini selesai. Bagian **Sistem Lama** wajib tetap 100% lolos — itu tandanya modul baru tidak merusak apa pun yang sudah berjalan.
+
+**Sistem Lama (tidak boleh berubah)**
+- [ ] Portal (`index.html`) tetap terbuka tanpa perlu login
+- [ ] Menu Absensi di Portal tetap membuka `absensi.html`
+- [ ] Absensi Masuk & Pulang di `absensi.html` masih berfungsi normal (tanpa login akun)
+- [ ] Duplikasi absensi (2x Masuk / 2x Pulang di hari sama) masih dicegah
+- [ ] QR Code masih mengarah ke `absensi.html`
+- [ ] Login Admin, Rekap Harian, Rekap 2 Minggu, Kelola Relawan, Kelola Divisi semuanya masih berjalan seperti sebelumnya
+
+**Modul Baru (Tahap 2-4)**
+- [ ] Admin bisa membuat akun baru dari tab **Akun Relawan**, password sementara muncul sekali
+- [ ] Username dobel & relawan yang sudah punya akun ditolak saat dibuatkan akun baru
+- [ ] Login relawan gagal dengan pesan yang jelas jika username/password salah
+- [ ] Login pertama memaksa relawan membuat password baru sebelum masuk ke Profil
+- [ ] Setelah ganti password, password lama tidak lagi bisa dipakai login
+- [ ] Profil menampilkan identitas resmi (ID/Nama/Divisi/Status) sebagai teks biasa, tidak bisa diedit
+- [ ] No HP & Email bisa diedit dan tersimpan
+- [ ] Tombol Reset Password di Admin membuat password lama relawan langsung tidak berlaku
+- [ ] Tombol Keluar di Profil benar-benar mengeluarkan sesi (coba buka `profil.html` lagi setelah keluar → harus diarahkan ke `login.html`)
+- [ ] Relawan berstatus Nonaktif di `01_DATA_RELAWAN` tidak bisa login walau akunnya ada
+- [ ] Tab **Rekap 2 Minggu** tampil dengan periode default yang masuk akal (1-14 atau 15-akhir bulan)
+- [ ] Ubah periode secara manual → data ikut berubah, dan data di luar periode tidak ikut terhitung
+- [ ] Export CSV Rekap 2 Minggu berhasil, kolom Total Hari Kerja terisi
 

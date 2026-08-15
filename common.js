@@ -1,7 +1,8 @@
 // ============================================================
 // SPPG JEUNGJING — FUNGSI BERSAMA
-// Dipakai oleh absensi.html (script.js) dan admin.html (admin.js)
-// agar logic pemanggilan API tidak ditulis dua kali (modular).
+// Dipakai oleh absensi.html (script.js), admin.html (admin.js),
+// login.html (login.js), dan profil.html (profil.js) agar logic
+// pemanggilan API tidak ditulis berulang-ulang (modular).
 // ============================================================
 
 /**
@@ -22,18 +23,32 @@ function hideLoading() {
 }
 
 /**
+ * Menampilkan toast singkat selama beberapa detik (internal, dipakai
+ * showError & showSuccess).
+ */
+function showToast_(message, isSuccess) {
+  const toast = document.getElementById('errorToast');
+  if (!toast) return;
+  toast.textContent = message;
+  toast.classList.toggle('toast-success', !!isSuccess);
+  toast.classList.remove('is-hidden');
+  clearTimeout(showToast_._timer);
+  showToast_._timer = setTimeout(() => toast.classList.add('is-hidden'), 5000);
+}
+
+/**
  * Menampilkan pesan error singkat (toast) selama beberapa detik.
  * Pesan teknis TIDAK ditampilkan ke pengguna — hanya pesan yang
  * sudah ramah pengguna (lihat error handling di Code.gs & script.js).
  * @param {string} message
  */
 function showError(message) {
-  const toast = document.getElementById('errorToast');
-  if (!toast) return;
-  toast.textContent = message;
-  toast.classList.remove('is-hidden');
-  clearTimeout(showError._timer);
-  showError._timer = setTimeout(() => toast.classList.add('is-hidden'), 5000);
+  showToast_(message, false);
+}
+
+/** Menampilkan pesan berhasil singkat (toast hijau), mis. setelah profil disimpan. */
+function showSuccess(message) {
+  showToast_(message, true);
 }
 
 /** Escape teks agar aman disisipkan sebagai innerHTML (mencegah XSS sederhana). */
@@ -96,7 +111,7 @@ async function apiPost(action, payload) {
       body: JSON.stringify(Object.assign({ action }, payload))
     });
   } catch (err) {
-    throw new Error('Absensi belum dapat disimpan. Silakan periksa koneksi internet dan coba kembali.');
+    throw new Error('Data belum dapat dikirim. Silakan periksa koneksi internet dan coba kembali.');
   }
   let json;
   try {
