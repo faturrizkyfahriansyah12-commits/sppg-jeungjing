@@ -12,7 +12,8 @@
     divisiList: [],
     relawanList: [],   // semua relawan (aktif + nonaktif), untuk tab "Kelola Relawan"
     rekapHarian: [],
-    rekapBulanan: []
+    rekapDuaMinggu: [],
+    akunList: []        // status akun relawan, untuk tab "Akun Relawan"
   };
 
   const el = {
@@ -42,11 +43,12 @@
     divisiGrid: document.getElementById('divisiGrid'),
     tbodyHarian: document.getElementById('tbodyHarian'),
 
-    filterBulan: document.getElementById('filterBulan'),
-    filterDivisiBulanan: document.getElementById('filterDivisiBulanan'),
-    btnMuatBulanan: document.getElementById('btnMuatBulanan'),
-    btnExportBulanan: document.getElementById('btnExportBulanan'),
-    tbodyBulanan: document.getElementById('tbodyBulanan'),
+    filterPeriodeAwal: document.getElementById('filterPeriodeAwal'),
+    filterPeriodeAkhir: document.getElementById('filterPeriodeAkhir'),
+    filterDivisiDuaMinggu: document.getElementById('filterDivisiDuaMinggu'),
+    btnMuatDuaMinggu: document.getElementById('btnMuatDuaMinggu'),
+    btnExportDuaMinggu: document.getElementById('btnExportDuaMinggu'),
+    tbodyDuaMinggu: document.getElementById('tbodyDuaMinggu'),
 
     formTambahRelawan: document.getElementById('formTambahRelawan'),
     inputNamaRelawanBaru: document.getElementById('inputNamaRelawanBaru'),
@@ -58,7 +60,15 @@
 
     formTambahDivisi: document.getElementById('formTambahDivisi'),
     inputDivisiBaru: document.getElementById('inputDivisiBaru'),
-    tbodyDivisi: document.getElementById('tbodyDivisi')
+    tbodyDivisi: document.getElementById('tbodyDivisi'),
+
+    cariAkun: document.getElementById('cariAkun'),
+    filterStatusAkun: document.getElementById('filterStatusAkun'),
+    tbodyAkun: document.getElementById('tbodyAkun'),
+    akunPasswordAlert: document.getElementById('akunPasswordAlert'),
+    akunPasswordAlertText: document.getElementById('akunPasswordAlertText'),
+    btnSalinPassword: document.getElementById('btnSalinPassword'),
+    btnTutupPasswordAlert: document.getElementById('btnTutupPasswordAlert')
   };
 
   // ===== LOGIN / LOGOUT =====
@@ -103,19 +113,24 @@
   async function initDashboard() {
     showLoading('Memuat data dashboard...');
     try {
-      const [divisiList, relawanList] = await Promise.all([
+      const [divisiList, relawanList, akunList] = await Promise.all([
         apiGet('getDivisi'),
-        apiGet('getRelawan', { semua: '1' })
+        apiGet('getRelawan', { semua: '1' }),
+        apiGet('getAkunRelawanList', { token: authToken })
       ]);
       cache.divisiList = divisiList;
       cache.relawanList = relawanList;
+      cache.akunList = akunList;
       fillDivisiSelects();
       renderRelawanTable();
       renderDivisiTable();
+      renderAkunTable();
 
       const now = new Date();
       el.filterTanggal.value = toDateInputValue(now);
-      el.filterBulan.value = toMonthInputValue(now);
+      const periodeDefault = defaultPeriodeDuaMinggu(now);
+      el.filterPeriodeAwal.value = toDateInputValue(periodeDefault.awal);
+      el.filterPeriodeAkhir.value = toDateInputValue(periodeDefault.akhir);
 
       await muatRekapHarian();
     } catch (err) {
@@ -129,7 +144,7 @@
     const opts = '<option value="">Semua Divisi</option>' +
       cache.divisiList.map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
     el.filterDivisiHarian.innerHTML = opts;
-    el.filterDivisiBulanan.innerHTML = opts;
+    el.filterDivisiDuaMinggu.innerHTML = opts;
     el.filterDivisiRelawan.innerHTML = opts;
     el.selectDivisiRelawanBaru.innerHTML = '<option value="" disabled selected>Pilih Divisi</option>' +
       cache.divisiList.map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
@@ -138,6 +153,12 @@
   function pad2(n) { return String(n).padStart(2, '0'); }
   function toDateInputValue(date) { return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`; }
   function toMonthInputValue(date) { return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}`; }
+  /** Periode gajian: tanggal 1-14 atau 15-akhir bulan, tergantung tanggal hari ini. */
+  function defaultPeriodeDuaMinggu(date) {
+    const y = date.getFullYear(), m = date.getMonth();
+    if (date.getDate() <= 14) return { awal: new Date(y, m, 1), akhir: new Date(y, m, 14) };
+    return { awal: new Date(y, m, 15), akhir: new Date(y, m + 1, 0) };
+  }
   function toTanggalIndo(dateInputValue) {
     const [y, m, d] = dateInputValue.split('-');
     return `${d}/${m}/${y}`;
@@ -229,33 +250,39 @@
     downloadCsv(rows, `rekap-harian-${el.filterTanggal.value}.csv`);
   });
 
-  // ===== REKAP BULANAN =====
-  el.btnMuatBulanan.addEventListener('click', muatRekapBulanan);
+  // ===== REKAP 2 MINGGU =====
+  el.btnMuatDuaMinggu.addEventListener('click', muatRekapDuaMinggu);
 
-  async function muatRekapBulanan() {
-    if (!el.filterBulan.value) return;
-    const [tahun, bulan] = el.filterBulan.value.split('-');
-    showLoading('Memuat rekap bulanan...');
+  async function muatRekapDuaMinggu() {
+    if (!el.filterPeriodeAwal.value || !el.filterPeriodeAkhir.value) return;
+    if (el.filterPeriodeAwal.value > el.filterPeriodeAkhir.value) {
+      showError('Periode awal tidak boleh setelah periode akhir.');
+      return;
+    }
+    showLoading('Memuat rekap 2 minggu...');
     try {
-      const res = await apiGet('getRekapBulanan', { bulan: Number(bulan), tahun: Number(tahun) });
-      cache.rekapBulanan = res.data;
-      renderRekapBulananTable();
+      const res = await apiGet('getRekapDuaMinggu', {
+        periodeAwal: el.filterPeriodeAwal.value,
+        periodeAkhir: el.filterPeriodeAkhir.value
+      });
+      cache.rekapDuaMinggu = res.data;
+      renderRekapDuaMingguTable();
     } catch (err) {
-      showError(err.message || 'Gagal memuat rekap bulanan.');
+      showError(err.message || 'Gagal memuat rekap 2 minggu.');
     } finally {
       hideLoading();
     }
   }
 
-  function renderRekapBulananTable() {
-    let rows = cache.rekapBulanan;
-    const divisi = el.filterDivisiBulanan.value;
+  function renderRekapDuaMingguTable() {
+    let rows = cache.rekapDuaMinggu;
+    const divisi = el.filterDivisiDuaMinggu.value;
     if (divisi) rows = rows.filter(r => r.divisi === divisi);
     if (!rows.length) {
-      el.tbodyBulanan.innerHTML = `<tr><td colspan="7"><div class="empty-state">Belum ada data untuk bulan ini.</div></td></tr>`;
+      el.tbodyDuaMinggu.innerHTML = `<tr><td colspan="8"><div class="empty-state">Belum ada data untuk periode ini.</div></td></tr>`;
       return;
     }
-    el.tbodyBulanan.innerHTML = rows.map(r => `
+    el.tbodyDuaMinggu.innerHTML = rows.map(r => `
       <tr>
         <td>${escapeHtml(r.nama)}</td>
         <td>${escapeHtml(r.divisi)}</td>
@@ -264,15 +291,16 @@
         <td>${r.izin}</td>
         <td>${r.sakit}</td>
         <td>${r.tidakHadir}</td>
+        <td>${r.totalHariKerja}</td>
       </tr>`).join('');
   }
-  el.filterDivisiBulanan.addEventListener('change', () => cache.rekapBulanan.length && renderRekapBulananTable());
+  el.filterDivisiDuaMinggu.addEventListener('change', () => cache.rekapDuaMinggu.length && renderRekapDuaMingguTable());
 
-  el.btnExportBulanan.addEventListener('click', () => {
-    if (!cache.rekapBulanan.length) { showError('Tidak ada data untuk diexport.'); return; }
-    const rows = [['Nama', 'Divisi', 'Hadir', 'Terlambat', 'Izin', 'Sakit', 'Tidak Hadir']];
-    cache.rekapBulanan.forEach(r => rows.push([r.nama, r.divisi, r.hadir, r.terlambat, r.izin, r.sakit, r.tidakHadir]));
-    downloadCsv(rows, `rekap-bulanan-${el.filterBulan.value}.csv`);
+  el.btnExportDuaMinggu.addEventListener('click', () => {
+    if (!cache.rekapDuaMinggu.length) { showError('Tidak ada data untuk diexport.'); return; }
+    const rows = [['Nama', 'Divisi', 'Hadir', 'Terlambat', 'Izin', 'Sakit', 'Tidak Hadir', 'Total Hari Kerja']];
+    cache.rekapDuaMinggu.forEach(r => rows.push([r.nama, r.divisi, r.hadir, r.terlambat, r.izin, r.sakit, r.tidakHadir, r.totalHariKerja]));
+    downloadCsv(rows, `rekap-2minggu-${el.filterPeriodeAwal.value}_${el.filterPeriodeAkhir.value}.csv`);
   });
 
   // ===== KELOLA RELAWAN =====
@@ -444,4 +472,131 @@
     const str = String(value === undefined || value === null ? '' : value);
     return /[",\n]/.test(str) ? '"' + str.replace(/"/g, '""') + '"' : str;
   }
+
+  // ===== AKUN RELAWAN (Tahap 2) =====
+  function saranUsername(nama, id) {
+    const depan = (nama || '').trim().split(/\s+/)[0].toLowerCase().replace(/[^a-z]/g, '');
+    const angka = (id || '').replace(/[^0-9]/g, '').slice(-3).padStart(3, '0');
+    return depan + angka;
+  }
+
+  function tampilkanPasswordAlert(nama, username, password) {
+    el.akunPasswordAlertText.innerHTML =
+      `Password sementara untuk <strong>${escapeHtml(nama)}</strong> (username: <strong>${escapeHtml(username)}</strong>):<br>` +
+      `<strong style="font-size:16px;letter-spacing:1px;">${escapeHtml(password)}</strong><br>` +
+      `Catat &amp; sampaikan sekarang ke relawan — password ini tidak akan ditampilkan lagi.`;
+    el.akunPasswordAlert.dataset.password = password;
+    el.akunPasswordAlert.classList.remove('is-hidden');
+    el.akunPasswordAlert.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  el.btnTutupPasswordAlert.addEventListener('click', () => {
+    el.akunPasswordAlert.classList.add('is-hidden');
+  });
+  el.btnSalinPassword.addEventListener('click', async () => {
+    const pw = el.akunPasswordAlert.dataset.password || '';
+    try {
+      await navigator.clipboard.writeText(pw);
+      el.btnSalinPassword.textContent = 'Tersalin ✓';
+      setTimeout(() => { el.btnSalinPassword.textContent = 'Salin'; }, 1500);
+    } catch (err) {
+      showError('Tidak dapat menyalin otomatis. Salin manual dari layar.');
+    }
+  });
+
+  async function muatUlangAkun() {
+    cache.akunList = await apiGet('getAkunRelawanList', { token: authToken });
+    renderAkunTable();
+  }
+
+  function renderAkunTable() {
+    const akunById = {};
+    cache.akunList.forEach(a => { akunById[a.idRelawan] = a; });
+
+    let rows = cache.relawanList.filter(r => (r.status || 'AKTIF') === 'AKTIF');
+    const cari = (el.cariAkun.value || '').trim().toLowerCase();
+    const filterStatus = el.filterStatusAkun.value;
+    if (cari) rows = rows.filter(r => r.nama.toLowerCase().includes(cari));
+    if (filterStatus === 'BELUM') rows = rows.filter(r => !akunById[r.id]);
+    if (filterStatus === 'ADA') rows = rows.filter(r => !!akunById[r.id]);
+
+    if (!rows.length) {
+      el.tbodyAkun.innerHTML = `<tr><td colspan="5"><div class="empty-state">Tidak ada relawan yang cocok.</div></td></tr>`;
+      return;
+    }
+
+    el.tbodyAkun.innerHTML = rows.map(r => {
+      const akun = akunById[r.id];
+      const akunCell = akun
+        ? `${escapeHtml(akun.username)} <span class="badge ${akun.wajibGantiPassword ? 'terlambat' : 'aktif'}">${akun.wajibGantiPassword ? 'Wajib Ganti Password' : 'Aktif'}</span>`
+        : `<span class="badge nonaktif">Belum Ada Akun</span>`;
+      const aksiCell = akun
+        ? `<button type="button" class="btn-mini btn-reset-password">Reset Password</button>`
+        : `<button type="button" class="btn-mini primary btn-buat-akun">+ Buat Akun</button>`;
+      return `
+      <tr data-id="${escapeHtml(r.id)}" data-nama="${escapeHtml(r.nama)}">
+        <td>${escapeHtml(r.id)}</td>
+        <td>${escapeHtml(r.nama)}</td>
+        <td>${escapeHtml(r.divisi)}</td>
+        <td class="cell-akun">${akunCell}</td>
+        <td class="cell-aksi-akun">${aksiCell}</td>
+      </tr>`;
+    }).join('');
+
+    el.tbodyAkun.querySelectorAll('.btn-buat-akun').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tr = btn.closest('tr');
+        const id = tr.dataset.id;
+        const nama = tr.dataset.nama;
+        tr.querySelector('.cell-aksi-akun').innerHTML = `
+          <form class="akun-inline-form">
+            <input type="text" class="input-username-baru" placeholder="username" value="${escapeHtml(saranUsername(nama, id))}" required>
+            <input type="tel" class="input-nohp-baru" placeholder="No HP (opsional)">
+            <button type="submit" class="btn-mini primary">Buat</button>
+            <button type="button" class="btn-mini btn-batal-akun">Batal</button>
+          </form>`;
+        const form = tr.querySelector('.akun-inline-form');
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const username = form.querySelector('.input-username-baru').value.trim();
+          const noHp = form.querySelector('.input-nohp-baru').value.trim();
+          showLoading('Membuat akun...');
+          try {
+            const hasil = await apiPost('addAkunRelawan', { token: authToken, idRelawan: id, username, noHp });
+            await muatUlangAkun();
+            tampilkanPasswordAlert(hasil.nama, hasil.username, hasil.passwordSementara);
+          } catch (err) {
+            showError(err.message || 'Gagal membuat akun.');
+          } finally {
+            hideLoading();
+          }
+        });
+        tr.querySelector('.btn-batal-akun').addEventListener('click', renderAkunTable);
+      });
+    });
+
+    el.tbodyAkun.querySelectorAll('.btn-reset-password').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const tr = btn.closest('tr');
+        const id = tr.dataset.id;
+        const nama = tr.dataset.nama;
+        if (!confirm(`Reset password untuk ${nama}? Password lama langsung tidak berlaku.`)) return;
+        showLoading('Mereset password...');
+        try {
+          const hasil = await apiPost('resetPasswordRelawan', { token: authToken, idRelawan: id });
+          await muatUlangAkun();
+          tampilkanPasswordAlert(nama, akunById[id] ? akunById[id].username : '-', hasil.passwordSementara);
+        } catch (err) {
+          showError(err.message || 'Gagal mereset password.');
+        } finally {
+          hideLoading();
+        }
+      });
+    });
+  }
+
+  [el.cariAkun, el.filterStatusAkun].forEach(elm => {
+    elm.addEventListener('input', renderAkunTable);
+    elm.addEventListener('change', renderAkunTable);
+  });
 })();

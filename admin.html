@@ -35,7 +35,7 @@
       <p class="login-error" id="loginError"></p>
       <button type="submit" class="btn-submit" id="btnLogin">Masuk</button>
     </form>
-    <a href="index.html" class="admin-link">← Kembali ke halaman absensi</a>
+    <a href="absensi.html" class="admin-link">← Kembali ke halaman absensi</a>
   </div>
 </div>
 
@@ -66,8 +66,9 @@
 
   <div class="admin-tabs">
     <button class="admin-tab-btn active" data-panel="panelHarian">Rekap Harian</button>
-    <button class="admin-tab-btn" data-panel="panelBulanan">Rekap Bulanan</button>
+    <button class="admin-tab-btn" data-panel="panelDuaMinggu">Rekap 2 Minggu</button>
     <button class="admin-tab-btn" data-panel="panelRelawan">Kelola Relawan</button>
+    <button class="admin-tab-btn" data-panel="panelAkun">Akun Relawan</button>
     <button class="admin-tab-btn" data-panel="panelDivisi">Kelola Divisi</button>
   </div>
 
@@ -100,18 +101,20 @@
     </div>
   </div>
 
-  <!-- REKAP BULANAN -->
-  <div class="admin-panel" id="panelBulanan">
+  <!-- REKAP 2 MINGGU -->
+  <div class="admin-panel" id="panelDuaMinggu">
     <div class="filter-bar">
-      <input type="month" id="filterBulan">
-      <select id="filterDivisiBulanan"><option value="">Semua Divisi</option></select>
-      <button class="btn-mini primary" id="btnMuatBulanan">Tampilkan</button>
-      <button class="btn-mini export" id="btnExportBulanan">Export CSV</button>
+      <input type="date" id="filterPeriodeAwal">
+      <span style="align-self:center;font-size:13px;color:var(--color-text-muted);">s/d</span>
+      <input type="date" id="filterPeriodeAkhir">
+      <select id="filterDivisiDuaMinggu"><option value="">Semua Divisi</option></select>
+      <button class="btn-mini primary" id="btnMuatDuaMinggu">Tampilkan</button>
+      <button class="btn-mini export" id="btnExportDuaMinggu">Export CSV</button>
     </div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Nama</th><th>Divisi</th><th>Hadir</th><th>Terlambat</th><th>Izin</th><th>Sakit</th><th>Tidak Hadir</th></tr></thead>
-        <tbody id="tbodyBulanan"><tr><td colspan="7"><div class="empty-state">Pilih bulan lalu klik Tampilkan.</div></td></tr></tbody>
+        <thead><tr><th>Nama</th><th>Divisi</th><th>Hadir</th><th>Terlambat</th><th>Izin</th><th>Sakit</th><th>Tidak Hadir</th><th>Total Hari Kerja</th></tr></thead>
+        <tbody id="tbodyDuaMinggu"><tr><td colspan="8"><div class="empty-state">Pilih periode lalu klik Tampilkan.</div></td></tr></tbody>
       </table>
     </div>
   </div>
@@ -139,6 +142,34 @@
       <table>
         <thead><tr><th>ID</th><th>Nama</th><th>Divisi</th><th>Status</th><th>Aksi</th></tr></thead>
         <tbody id="tbodyRelawan"><tr><td colspan="5"><div class="empty-state">Memuat data...</div></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- AKUN RELAWAN (Tahap 2) -->
+  <div class="admin-panel" id="panelAkun">
+    <div class="akun-password-alert is-hidden" id="akunPasswordAlert">
+      <p id="akunPasswordAlertText"></p>
+      <div class="akun-password-alert-actions">
+        <button type="button" class="btn-mini" id="btnSalinPassword">Salin</button>
+        <button type="button" class="btn-mini" id="btnTutupPasswordAlert">Tutup</button>
+      </div>
+    </div>
+
+    <p class="section-title">Akun Relawan</p>
+    <div class="filter-bar">
+      <input type="text" id="cariAkun" placeholder="Cari nama...">
+      <select id="filterStatusAkun">
+        <option value="">Semua</option>
+        <option value="BELUM">Belum Ada Akun</option>
+        <option value="ADA">Sudah Ada Akun</option>
+      </select>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>Nama</th><th>Divisi</th><th>Akun</th><th>Aksi</th></tr></thead>
+        <tbody id="tbodyAkun"><tr><td colspan="5"><div class="empty-state">Memuat data...</div></td></tr></tbody>
       </table>
     </div>
   </div>

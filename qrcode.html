@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR Code Absensi — SPPG Jeungjing</title>
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body class="qr-page">
+  <div class="bg-decor" aria-hidden="true">
+    <div class="blob blob--sky-top"></div>
+    <div class="blob blob--gold-left"></div>
+    <div class="blob blob--sky-bottom"></div>
+  </div>
+
+  <div class="qr-card">
+    <div class="qr-logos">
+      <img src="assets/logo.png" alt="Logo SPPG Jeungjing" class="qr-logo">
+      <img src="assets/logo-bgn.png" alt="Logo Badan Gizi Nasional" class="qr-logo">
+    </div>
+    <h1>SPPG JEUNGJING</h1>
+    <p class="qr-subtitle">Sistem Absensi Relawan</p>
+    <div id="qrcodeContainer" class="qr-box"></div>
+    <p class="qr-instruction">Scan QR Code untuk langsung membuka halaman Absensi.</p>
+    <button class="btn-secondary no-print" onclick="window.print()">Cetak QR Code</button>
+    <p class="no-print" style="font-size:11.5px;color:var(--color-text-muted);margin-top:14px;">
+      Halaman ini untuk admin — cetak dan tempel di lokasi absensi.<br>
+      <a href="absensi.html" class="admin-link" style="margin-top:6px;">← Kembali ke halaman absensi</a>
+    </p>
+    <p class="credit no-print" style="margin-top:18px;">© 2026 SPPG Jeungjing · Developed by Fatur Rizky Fahriansyah</p>
+  </div>
+
+  <script>
+    // URL tujuan dibuat otomatis mengikuti alamat website ini saat ini,
+    // sehingga tidak perlu diisi manual — cukup buka halaman ini setelah
+    // website berhasil di-deploy ke GitHub Pages.
+    // Diarahkan ke absensi.html (bukan index.html) karena index.html kini
+    // adalah halaman Portal, bukan halaman Absensi.
+    var targetUrl = window.location.origin + window.location.pathname.replace('qrcode.html', 'absensi.html');
+
+    new QRCode(document.getElementById('qrcodeContainer'), {
+      text: targetUrl,
+      width: 240,
+      height: 240,
+      colorDark: '#14304F',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  </script>
+</body>
+</html>

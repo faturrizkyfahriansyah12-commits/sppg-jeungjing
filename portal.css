@@ -1,0 +1,292 @@
+/* ============================================================
+   SPPG JEUNGJING — PORTAL RELAWAN
+   Stylesheet khusus Portal (index.html) & halaman placeholder.
+   Sengaja dipisah dari style.css agar halaman Absensi & Admin
+   yang sudah berjalan tidak tersentuh sama sekali.
+   Memakai variabel warna/radius/shadow yang sama dari style.css
+   (di-load lebih dulu) supaya identitas visual tetap konsisten.
+============================================================ */
+
+.portal-main {
+  position: relative;
+  z-index: 1;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 20px 16px 40px;
+}
+
+/* --- Kartu sapaan --- */
+.portal-greeting {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 20px;
+  margin-bottom: 18px;
+}
+.portal-greeting-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.portal-greeting h2 {
+  font-size: 17px;
+  margin: 0;
+  color: var(--color-navy);
+}
+.portal-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  white-space: nowrap;
+}
+.portal-status-pill::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-success);
+}
+.portal-greeting p {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--color-text-muted);
+}
+
+/* --- Identitas satuan --- */
+.portal-identity {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  text-align: center;
+  margin: -6px 0 20px;
+  line-height: 1.5;
+}
+.portal-identity strong { color: var(--color-navy); }
+
+/* --- Akses cepat: Absensi --- */
+.portal-quick-action {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(135deg, var(--color-sky) 0%, var(--color-sky-deep) 100%);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  margin-bottom: 22px;
+  box-shadow: var(--shadow-card);
+  text-decoration: none;
+  color: #fff;
+  transition: transform .15s ease;
+}
+.portal-quick-action:active { transform: scale(0.98); }
+.portal-quick-action-icon {
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  border-radius: var(--radius-md);
+  background: rgba(255,255,255,0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.portal-quick-action-icon svg { width: 24px; height: 24px; }
+.portal-quick-action-text h3 { margin: 0 0 2px; font-size: 15px; }
+.portal-quick-action-text p { margin: 0; font-size: 12.5px; opacity: 0.88; }
+.portal-quick-action-arrow { margin-left: auto; flex-shrink: 0; opacity: 0.8; }
+
+/* --- Judul seksi --- */
+.portal-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin: 0 0 10px 4px;
+}
+
+/* --- Grid menu --- */
+.portal-menu-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.portal-menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 16px 8px;
+  text-decoration: none;
+  color: var(--color-text);
+  cursor: pointer;
+  font: inherit;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.portal-menu-item:active { transform: scale(0.96); }
+.portal-menu-item-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-pill);
+  background: var(--color-sky-soft);
+  color: var(--color-sky-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.portal-menu-item-icon svg { width: 20px; height: 20px; }
+.portal-menu-item span {
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+.portal-menu-item--logout .portal-menu-item-icon {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+/* --- Info/pengumuman --- */
+.portal-info-card {
+  background: var(--color-gold-soft);
+  border: 1px solid rgba(201,162,39,0.35);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-bottom: 22px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.portal-info-card svg { width: 20px; height: 20px; flex-shrink: 0; color: var(--color-gold-deep); margin-top: 1px; }
+.portal-info-card h4 { margin: 0 0 3px; font-size: 13.5px; color: var(--color-navy); }
+.portal-info-card p { margin: 0; font-size: 12.5px; color: var(--color-text-muted); line-height: 1.5; }
+
+@media (min-width: 640px) {
+  .portal-main { max-width: 620px; padding-top: 28px; }
+  .portal-menu-grid { grid-template-columns: repeat(5, 1fr); gap: 12px; }
+}
+
+/* ============================================================
+   HALAMAN PLACEHOLDER (Profil, Riwayat, Jadwal, dst.)
+============================================================ */
+.placeholder-main {
+  position: relative;
+  z-index: 1;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 60px 20px;
+  text-align: center;
+}
+.placeholder-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--color-sky-soft);
+  color: var(--color-sky-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 18px;
+}
+.placeholder-icon svg { width: 30px; height: 30px; }
+.placeholder-main h2 { font-size: 18px; margin: 0 0 8px; color: var(--color-navy); }
+.placeholder-main p { font-size: 13.5px; color: var(--color-text-muted); margin: 0 0 24px; line-height: 1.6; }
+.placeholder-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 11px 20px;
+  border-radius: var(--radius-pill);
+  background: var(--color-sky);
+  color: #fff;
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+/* ============================================================
+   LOGIN & PROFIL RELAWAN
+============================================================ */
+.auth-main {
+  position: relative;
+  z-index: 1;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+}
+.auth-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 22px 18px;
+}
+.auth-card h2 { margin: 0 0 4px; font-size: 17px; color: var(--color-navy); }
+.auth-card .auth-sub { margin: 0 0 18px; font-size: 13px; color: var(--color-text-muted); }
+
+.password-field { position: relative; }
+.password-toggle {
+  position: absolute;
+  right: 6px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; padding: 8px;
+  color: var(--color-text-muted); font-size: 12px; font-weight: 700;
+  cursor: pointer;
+}
+
+.profile-identity-list { margin-bottom: 18px; }
+.profile-identity-row {
+  display: flex; justify-content: space-between; gap: 10px;
+  padding: 10px 0; border-bottom: 1px solid var(--color-border);
+  font-size: 13.5px;
+}
+.profile-identity-row:last-child { border-bottom: none; }
+.profile-identity-row span:first-child { color: var(--color-text-muted); }
+.profile-identity-row span:last-child { font-weight: 700; color: var(--color-navy); text-align: right; }
+
+.profile-section-title {
+  font-size: 13px; font-weight: 700; color: var(--color-text-muted);
+  text-transform: uppercase; letter-spacing: .04em;
+  margin: 22px 0 10px 2px;
+}
+.btn-outline {
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text);
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+}
+.btn-danger-outline {
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--color-danger);
+  background: transparent;
+  color: var(--color-danger);
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+.must-change-banner {
+  background: var(--color-gold-soft);
+  border: 1px solid rgba(201,162,39,0.35);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  font-size: 12.5px;
+  color: var(--color-navy);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+.toast.toast-success { background: var(--color-success); }
