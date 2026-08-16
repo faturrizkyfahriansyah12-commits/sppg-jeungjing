@@ -123,6 +123,7 @@ tbody tr:hover { background: var(--color-bg); }
 .badge.belum-absen { background: var(--color-muted-bg); color: var(--color-muted-text); }
 .badge.aktif { background: var(--color-success-bg); color: var(--color-success); }
 .badge.nonaktif { background: var(--color-muted-bg); color: var(--color-muted-text); }
+.badge.akun-nonaktif { background: var(--color-danger-bg); color: var(--color-danger); }
 
 .empty-state { text-align: center; padding: 34px 20px; color: var(--color-text-muted); font-size: 13.5px; }
 

@@ -42,8 +42,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       main.style.display = 'block';
     } catch (err) {
       hideLoading();
-      // Sesi kedaluwarsa / tidak valid → kembali ke login, bukan tampil error kosong.
+      // Sesi kedaluwarsa ATAU akun baru saja dinonaktifkan Admin → kembali ke
+      // login, tapi bawa pesannya supaya relawan tahu alasannya, bukan
+      // tampilan form kosong yang membingungkan.
       hapusSesiRelawan();
+      simpanNotisLogin(err.message || 'Sesi telah berakhir. Silakan login kembali.');
       window.location.href = 'login.html';
     }
   }

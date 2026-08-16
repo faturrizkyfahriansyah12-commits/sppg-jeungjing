@@ -583,7 +583,8 @@
     const filterStatus = el.filterStatusAkun.value;
     if (cari) rows = rows.filter(r => r.nama.toLowerCase().includes(cari));
     if (filterStatus === 'BELUM') rows = rows.filter(r => !akunById[r.id]);
-    if (filterStatus === 'ADA') rows = rows.filter(r => !!akunById[r.id]);
+    if (filterStatus === 'AKTIF') rows = rows.filter(r => akunById[r.id] && akunById[r.id].statusAkun === 'AKTIF');
+    if (filterStatus === 'NONAKTIF') rows = rows.filter(r => akunById[r.id] && akunById[r.id].statusAkun === 'NONAKTIF');
 
     if (!rows.length) {
       el.tbodyAkun.innerHTML = `<tr><td colspan="5"><div class="empty-state">Tidak ada relawan yang cocok.</div></td></tr>`;
@@ -592,12 +593,21 @@
 
     el.tbodyAkun.innerHTML = rows.map(r => {
       const akun = akunById[r.id];
-      const akunCell = akun
-        ? `${escapeHtml(akun.username)} <span class="badge ${akun.wajibGantiPassword ? 'terlambat' : 'aktif'}">${akun.wajibGantiPassword ? 'Wajib Ganti Password' : 'Aktif'}</span>`
-        : `<span class="badge nonaktif">Belum Ada Akun</span>`;
-      const aksiCell = akun
-        ? `<button type="button" class="btn-mini btn-reset-password">Reset Password</button>`
-        : `<button type="button" class="btn-mini primary btn-buat-akun">+ Buat Akun</button>`;
+      let akunCell;
+      let aksiCell;
+
+      if (!akun) {
+        akunCell = `<span class="badge nonaktif">Belum Ada Akun</span>`;
+        aksiCell = `<button type="button" class="btn-mini primary btn-buat-akun">+ Buat Akun</button>`;
+      } else if (akun.statusAkun === 'NONAKTIF') {
+        akunCell = `${escapeHtml(akun.username)} <span class="badge akun-nonaktif">Nonaktif</span>`;
+        aksiCell = `<button type="button" class="btn-mini btn-toggle-status" data-status-baru="AKTIF">Aktifkan</button>`;
+      } else {
+        akunCell = `${escapeHtml(akun.username)} <span class="badge ${akun.wajibGantiPassword ? 'terlambat' : 'aktif'}">${akun.wajibGantiPassword ? 'Wajib Ganti Password' : 'Aktif'}</span>`;
+        aksiCell = `<button type="button" class="btn-mini btn-reset-password">Reset Password</button>
+          <button type="button" class="btn-mini btn-toggle-status" data-status-baru="NONAKTIF">Nonaktifkan</button>`;
+      }
+
       return `
       <tr data-id="${escapeHtml(r.id)}" data-nama="${escapeHtml(r.nama)}">
         <td>${escapeHtml(r.id)}</td>
@@ -653,6 +663,29 @@
           tampilkanPasswordAlert(nama, akunById[id] ? akunById[id].username : '-', hasil.passwordSementara);
         } catch (err) {
           showError(err.message || 'Gagal mereset password.');
+        } finally {
+          hideLoading();
+        }
+      });
+    });
+
+    el.tbodyAkun.querySelectorAll('.btn-toggle-status').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const tr = btn.closest('tr');
+        const id = tr.dataset.id;
+        const nama = tr.dataset.nama;
+        const statusBaru = btn.dataset.statusBaru;
+        const pesanKonfirmasi = statusBaru === 'NONAKTIF'
+          ? `Nonaktifkan akun ${nama}? Relawan ini tidak akan bisa login lagi, dan akan otomatis keluar pada aktivitas berikutnya jika sedang login.`
+          : `Aktifkan kembali akun ${nama}?`;
+        if (!confirm(pesanKonfirmasi)) return;
+        showLoading(statusBaru === 'NONAKTIF' ? 'Menonaktifkan akun...' : 'Mengaktifkan akun...');
+        try {
+          await apiPost('updateStatusAkunRelawan', { token: authToken, idRelawan: id, statusBaru });
+          await muatUlangAkun();
+          showSuccess(`Akun ${nama} berhasil ${statusBaru === 'NONAKTIF' ? 'dinonaktifkan' : 'diaktifkan'}.`);
+        } catch (err) {
+          showError(err.message || 'Gagal mengubah status akun.');
         } finally {
           hideLoading();
         }

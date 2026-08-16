@@ -22,3 +22,22 @@ function ambilSesiRelawan() {
 function hapusSesiRelawan() {
   localStorage.removeItem(RELAWAN_SESSION_KEY);
 }
+
+// Dipakai saat sesi relawan dipaksa berakhir (mis. akun dinonaktifkan Admin),
+// supaya login.html bisa menampilkan pesan yang jelas, bukan cuma form kosong.
+const RELAWAN_NOTICE_KEY = 'sppgRelawanLoginNotice';
+
+function simpanNotisLogin(pesan) {
+  try { sessionStorage.setItem(RELAWAN_NOTICE_KEY, pesan); } catch (e) { /* abaikan kalau storage tidak tersedia */ }
+}
+
+/** Ambil sekali lalu langsung dihapus, supaya tidak muncul lagi di reload berikutnya. */
+function ambilDanHapusNotisLogin() {
+  try {
+    const pesan = sessionStorage.getItem(RELAWAN_NOTICE_KEY);
+    sessionStorage.removeItem(RELAWAN_NOTICE_KEY);
+    return pesan;
+  } catch (e) {
+    return null;
+  }
+}
