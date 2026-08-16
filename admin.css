@@ -33,7 +33,21 @@
   margin-bottom: 10px; background: var(--color-bg);
 }
 .login-card input:focus { outline: none; border-color: var(--color-primary); background: #fff; }
+.password-field-wrap { position: relative; margin-bottom: 10px; }
+.password-field-wrap input { margin-bottom: 0; padding-right: 78px; }
+.password-toggle-admin {
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; padding: 8px;
+  color: var(--color-text-muted); font-size: 11px; font-weight: 700; cursor: pointer;
+}
 .login-error { color: var(--color-danger); font-size: 12.5px; font-weight: 600; margin: 4px 0 12px; min-height: 16px; }
+.link-button {
+  display: block; width: 100%; text-align: center;
+  background: none; border: none; margin-top: 10px;
+  color: var(--color-primary); font-size: 12.5px; font-weight: 700;
+  cursor: pointer; font-family: var(--font-main);
+}
+.toast.toast-success { background: var(--color-success); }
 
 /* ----- TOPBAR ----- */
 .admin-topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }

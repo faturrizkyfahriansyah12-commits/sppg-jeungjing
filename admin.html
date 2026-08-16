@@ -21,7 +21,7 @@
 
 <!-- LOGIN -->
 <div class="login-wrap" id="loginWrap">
-  <div class="login-card">
+  <div class="login-card" id="cardLogin">
     <div class="login-logos">
       <img src="assets/logo.png" alt="Logo SPPG Jeungjing">
       <span class="login-logo-divider"></span>
@@ -31,11 +31,31 @@
     <p class="subtitle">SPPG Jeungjing · Sistem Absensi Relawan</p>
     <form id="loginForm">
       <input type="text" id="inputUsername" placeholder="Username" autocomplete="username" required>
-      <input type="password" id="inputPassword" placeholder="Password" autocomplete="current-password" required>
+      <div class="password-field-wrap">
+        <input type="password" id="inputPassword" placeholder="Password" autocomplete="current-password" required>
+        <button type="button" class="password-toggle-admin" id="toggleAdminPw">TAMPILKAN</button>
+      </div>
       <p class="login-error" id="loginError"></p>
       <button type="submit" class="btn-submit" id="btnLogin">Masuk</button>
     </form>
+    <button type="button" class="link-button" id="btnLupaPassword">Lupa Password?</button>
     <a href="absensi.html" class="admin-link">← Kembali ke halaman absensi</a>
+  </div>
+
+  <div class="login-card is-hidden" id="cardResetPassword" style="margin-top:14px;">
+    <h1>Reset Password</h1>
+    <p class="subtitle">Kode reset didapat dari developer/pengelola sistem — dibuat manual, bukan otomatis. Berlaku 15 menit.</p>
+    <form id="resetPasswordForm">
+      <input type="text" id="resetUsername" placeholder="Username" autocomplete="username" required>
+      <input type="text" id="resetKode" placeholder="Kode reset 6 digit" inputmode="numeric" maxlength="6" required>
+      <div class="password-field-wrap">
+        <input type="password" id="resetPasswordBaru" placeholder="Password baru (min. 8 karakter)" autocomplete="new-password" minlength="8" required>
+        <button type="button" class="password-toggle-admin" id="toggleResetPw">TAMPILKAN</button>
+      </div>
+      <p class="login-error" id="resetError"></p>
+      <button type="submit" class="btn-submit" id="btnResetPassword">Simpan Password Baru</button>
+    </form>
+    <button type="button" class="link-button" id="btnBatalReset">← Kembali ke Login</button>
   </div>
 </div>
 

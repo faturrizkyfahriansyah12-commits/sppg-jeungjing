@@ -22,7 +22,18 @@
     loginForm: document.getElementById('loginForm'),
     inputUsername: document.getElementById('inputUsername'),
     inputPassword: document.getElementById('inputPassword'),
+    toggleAdminPw: document.getElementById('toggleAdminPw'),
     loginError: document.getElementById('loginError'),
+    btnLupaPassword: document.getElementById('btnLupaPassword'),
+    btnBatalReset: document.getElementById('btnBatalReset'),
+    cardLogin: document.getElementById('cardLogin'),
+    cardResetPassword: document.getElementById('cardResetPassword'),
+    resetPasswordForm: document.getElementById('resetPasswordForm'),
+    resetUsername: document.getElementById('resetUsername'),
+    resetKode: document.getElementById('resetKode'),
+    resetPasswordBaru: document.getElementById('resetPasswordBaru'),
+    toggleResetPw: document.getElementById('toggleResetPw'),
+    resetError: document.getElementById('resetError'),
     btnLogout: document.getElementById('btnLogout'),
 
     statTotal: document.getElementById('statTotal'),
@@ -72,6 +83,53 @@
   };
 
   // ===== LOGIN / LOGOUT =====
+  el.toggleAdminPw.addEventListener('click', () => {
+    const tampil = el.inputPassword.type === 'password';
+    el.inputPassword.type = tampil ? 'text' : 'password';
+    el.toggleAdminPw.textContent = tampil ? 'SEMBUNYIKAN' : 'TAMPILKAN';
+  });
+
+  // ===== LUPA PASSWORD (Tahap 5) =====
+  el.toggleResetPw.addEventListener('click', () => {
+    const tampil = el.resetPasswordBaru.type === 'password';
+    el.resetPasswordBaru.type = tampil ? 'text' : 'password';
+    el.toggleResetPw.textContent = tampil ? 'SEMBUNYIKAN' : 'TAMPILKAN';
+  });
+
+  el.btnLupaPassword.addEventListener('click', () => {
+    el.cardLogin.classList.add('is-hidden');
+    el.cardResetPassword.classList.remove('is-hidden');
+    el.resetError.textContent = '';
+  });
+
+  el.btnBatalReset.addEventListener('click', () => {
+    el.cardResetPassword.classList.add('is-hidden');
+    el.cardLogin.classList.remove('is-hidden');
+    el.resetPasswordForm.reset();
+  });
+
+  el.resetPasswordForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    el.resetError.textContent = '';
+    showLoading('Menyimpan password baru...');
+    try {
+      await apiPost('resetAdminPasswordWithCode', {
+        username: el.resetUsername.value.trim(),
+        kode: el.resetKode.value.trim(),
+        passwordBaru: el.resetPasswordBaru.value
+      });
+      hideLoading();
+      el.resetPasswordForm.reset();
+      el.cardResetPassword.classList.add('is-hidden');
+      el.cardLogin.classList.remove('is-hidden');
+      el.loginError.textContent = '';
+      showSuccess('Password berhasil diganti. Silakan login dengan password baru.');
+    } catch (err) {
+      hideLoading();
+      el.resetError.textContent = err.message || 'Gagal mereset password.';
+    }
+  });
+
   el.loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     el.loginError.textContent = '';
@@ -92,11 +150,18 @@
     }
   });
 
-  el.btnLogout.addEventListener('click', () => {
+  el.btnLogout.addEventListener('click', async () => {
+    const tokenLama = authToken;
     authToken = null;
     el.dashboardWrap.classList.add('is-hidden');
     el.loginWrap.classList.remove('is-hidden');
     el.inputPassword.value = '';
+    try {
+      await apiPost('logout', { token: tokenLama });
+    } catch (err) {
+      // Tampilan tetap keluar di sisi perangkat meski panggilan ke server gagal
+      // (mis. sedang offline) — sesi di server akan kedaluwarsa otomatis maksimal 6 jam.
+    }
   });
 
   // ===== TABS =====
