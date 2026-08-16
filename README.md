@@ -309,4 +309,5 @@ Jalankan checklist ini setelah deploy sebelum menganggap tahap ini selesai. Bagi
 - [ ] (Tahap 2) Klik **Keluar** di dashboard Admin → coba akses ulang (mis. refresh halaman & login lagi dengan token lama kalau bisa disimulasikan) → sesi lama benar-benar tidak berlaku, bukan cuma tampilan yang berpindah ke form login
 - [ ] (Tahap 5) Di form login Admin, klik **TAMPILKAN** pada password → teks password terlihat, tombol berubah jadi **SEMBUNYIKAN** → klik lagi, kembali tersembunyi
 - [ ] (Tahap 5) Klik **"Lupa Password?"** → jalankan `generateAdminResetCode()` dari editor Apps Script → catat kode 6 digit dari log/Executions → masukkan Username + kode + password baru di form Reset Password → berhasil → login pakai password baru berhasil, login pakai password lama ditolak
+- [ ] (Tahap 6) Absensi Masuk & Pulang tetap berjalan normal — perubahan ini murni di dalam kode, tidak ada yang terlihat beda di layar
 
