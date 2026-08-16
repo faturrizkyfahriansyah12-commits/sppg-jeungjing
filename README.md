@@ -240,8 +240,9 @@ Langkah mengisi absensi:
 - Disarankan tetap membatasi akses "Share" pada Spreadsheet asli hanya untuk akun Google admin, sebagai lapisan keamanan tambahan.
 - Password relawan **tidak pernah** disimpan sebagai teks biasa — hanya *hash* SHA-256 (dengan salt acak per akun) yang tersimpan di `07_AKUN_RELAWAN`, sama seperti pola akun Admin.
 - Password sementara (saat akun dibuat / direset) hanya muncul **satu kali** di layar Admin — tidak disimpan di sistem sebagai teks biasa setelahnya, dan tidak bisa dilihat kembali oleh siapa pun termasuk Admin.
-- Sesi login relawan (`login.html`/`profil.html`) memakai mekanisme sama seperti Admin (Cache Service, maks. 6 jam) — namun tokennya **disimpan di `localStorage` HP relawan** (bukan sesi per-refresh seperti Admin), karena relawan diharapkan login dari perangkat pribadinya sendiri secara berulang. Tombol **Keluar** menghapus sesi baik di HP maupun di server.
+- Sesi login relawan (`login.html`/`profil.html`) memakai mekanisme sama seperti Admin (Cache Service, maks. 6 jam) — namun tokennya **disimpan di `localStorage` HP relawan** (bukan sesi per-refresh seperti Admin), karena relawan diharapkan login dari perangkat pribadinya sendiri secara berulang. Tombol **Keluar**, baik di Admin maupun Profil Relawan, menghapus sesi di server (`CacheService`) — bukan hanya di HP/browser (Tahap 2).
 - Relawan **hanya** bisa mengubah No HP, Email, dan password miliknya sendiri — identitas resmi (ID/Nama/Divisi/Status) tetap sepenuhnya dikontrol Admin lewat tab Kelola Relawan.
+- **Lupa Password Admin** (Tahap 5): sistem belum punya email/SMS resmi, jadi alurnya sengaja melibatkan developer secara manual, bukan tombol otomatis. Admin yang lupa password menghubungi developer, developer menjalankan `generateAdminResetCode()` satu kali dari editor Apps Script (lihat komentar di `Admin.gs`), lalu menyampaikan kode 6 digit itu secara manual (WhatsApp/telepon). Kode berlaku 15 menit dan hanya bisa dipakai sekali — admin memasukkannya lewat tautan "Lupa Password?" di halaman login.
 
 ---
 
@@ -304,4 +305,8 @@ Jalankan checklist ini setelah deploy sebelum menganggap tahap ini selesai. Bagi
 - [ ] Tab **Rekap 2 Minggu** tampil dengan periode default yang masuk akal (1-14 atau 15-akhir bulan)
 - [ ] Ubah periode secara manual → data ikut berubah, dan data di luar periode tidak ikut terhitung
 - [ ] Export CSV Rekap 2 Minggu berhasil, kolom Total Hari Kerja terisi
+- [ ] (Tahap 1) Absensi Masuk & Pulang tetap berjalan normal seperti biasa — LockService seharusnya tidak terasa oleh pengguna sama sekali kecuali sedang ada lonjakan pemakaian bersamaan
+- [ ] (Tahap 2) Klik **Keluar** di dashboard Admin → coba akses ulang (mis. refresh halaman & login lagi dengan token lama kalau bisa disimulasikan) → sesi lama benar-benar tidak berlaku, bukan cuma tampilan yang berpindah ke form login
+- [ ] (Tahap 5) Di form login Admin, klik **TAMPILKAN** pada password → teks password terlihat, tombol berubah jadi **SEMBUNYIKAN** → klik lagi, kembali tersembunyi
+- [ ] (Tahap 5) Klik **"Lupa Password?"** → jalankan `generateAdminResetCode()` dari editor Apps Script → catat kode 6 digit dari log/Executions → masukkan Username + kode + password baru di form Reset Password → berhasil → login pakai password baru berhasil, login pakai password lama ditolak
 
