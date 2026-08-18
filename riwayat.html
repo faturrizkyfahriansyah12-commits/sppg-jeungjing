@@ -33,17 +33,35 @@
     </div>
   </header>
 
-  <main class="placeholder-main">
-    <div class="placeholder-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg></div>
-    <h2>Riwayat Absensi</h2>
-    <p>Riwayat kehadiran Anda akan tampil di sini setelah fitur ini dikembangkan pada fase berikutnya.</p>
-    <a href="index.html" class="placeholder-back">← Kembali ke Portal</a>
+  <main class="auth-main" id="riwayatMain" style="display:none;">
+    <section class="auth-card" style="margin-bottom:14px;">
+      <h2>Riwayat Absensi</h2>
+      <p class="auth-sub">14 hari terakhir — bergeser otomatis setiap hari, terbaru di atas.</p>
+    </section>
+
+    <div class="riwayat-list" id="riwayatList"></div>
+
+    <p style="text-align:center;margin-top:16px;">
+      <a href="index.html" class="admin-link">← Kembali ke Portal</a>
+    </p>
   </main>
+
+  <div class="toast is-hidden" id="errorToast" role="alert"></div>
+
+  <div class="loading-overlay is-hidden" id="loadingOverlay">
+    <div class="spinner"></div>
+    <p id="loadingText">Memuat riwayat...</p>
+  </div>
 
   <footer class="site-footer">
     <p><strong>SPPG JEUNGJING</strong> · Portal Relawan</p>
     <p class="credit">© 2026 SPPG Jeungjing · Developed by Fatur Rizky Fahriansyah</p>
   </footer>
 </div>
+
+<script src="config.js"></script>
+<script src="common.js"></script>
+<script src="auth-relawan.js"></script>
+<script src="riwayat.js"></script>
 </body>
 </html>

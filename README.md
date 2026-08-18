@@ -312,4 +312,7 @@ Jalankan checklist ini setelah deploy sebelum menganggap tahap ini selesai. Bagi
 - [ ] (Tahap 5) Klik **"Lupa Password?"** → jalankan `generateAdminResetCode()` dari editor Apps Script → catat kode 6 digit dari log/Executions → masukkan Username + kode + password baru di form Reset Password → berhasil → login pakai password baru berhasil, login pakai password lama ditolak
 - [ ] (Tahap 6) Absensi Masuk & Pulang tetap berjalan normal — perubahan ini murni di dalam kode, tidak ada yang terlihat beda di layar
 - [ ] (Fondasi Dashboard Relawan) Buat akun percobaan, login, lalu di Admin klik **Nonaktifkan** pada akun tsb → coba buka/refresh `profil.html` di sesi relawan yang sedang login → harus terlempar ke `login.html` dengan pesan "Akun Anda telah dinonaktifkan oleh Admin" → coba login lagi dengan akun itu → harus ditolak → klik **Aktifkan** di Admin → login lagi → berhasil
+- [ ] **(Modul Riwayat Absensi)** Setelah beberapa kali absen, buka menu Riwayat Absensi → 14 hari terakhir tampil dengan status yang benar, terbaru di atas
+- [ ] **(Modul Pengaturan Akun)** Buka Profil Saya → klik "Ganti password & pengaturan akun" → Status Akun & Login Terakhir tampil → ganti password berhasil dari sana (bukan lagi dari Profil)
+- [ ] **(Modul Bantuan)** Halaman Bantuan terbuka, semua bagian panduan bisa dibuka/tutup
 
