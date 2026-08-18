@@ -243,6 +243,7 @@ Langkah mengisi absensi:
 - Sesi login relawan (`login.html`/`profil.html`) memakai mekanisme sama seperti Admin (Cache Service, maks. 6 jam) — namun tokennya **disimpan di `localStorage` HP relawan** (bukan sesi per-refresh seperti Admin), karena relawan diharapkan login dari perangkat pribadinya sendiri secara berulang. Tombol **Keluar**, baik di Admin maupun Profil Relawan, menghapus sesi di server (`CacheService`) — bukan hanya di HP/browser (Tahap 2).
 - Relawan **hanya** bisa mengubah No HP, Email, dan password miliknya sendiri — identitas resmi (ID/Nama/Divisi/Status) tetap sepenuhnya dikontrol Admin lewat tab Kelola Relawan.
 - **Lupa Password Admin** (Tahap 5): sistem belum punya email/SMS resmi, jadi alurnya sengaja melibatkan developer secara manual, bukan tombol otomatis. Admin yang lupa password menghubungi developer, developer menjalankan `generateAdminResetCode()` satu kali dari editor Apps Script (lihat komentar di `Admin.gs`), lalu menyampaikan kode 6 digit itu secara manual (WhatsApp/telepon). Kode berlaku 15 menit dan hanya bisa dipakai sekali — admin memasukkannya lewat tautan "Lupa Password?" di halaman login.
+- **Status akun Nonaktif** (fondasi Dashboard Relawan): Admin bisa menonaktifkan akun relawan lewat tab Akun Relawan. Setiap aksi relawan yang butuh login (`requireAuthRelawan`) memvalidasi ulang status akun ke sheet — begitu Admin menonaktifkan, aksi *berikutnya* dari relawan tsb langsung ditolak & sesinya dihapus dari server, bukan menunggu token kedaluwarsa (maks 6 jam). Ini bukan real-time seketika (server tidak tahu token mana yang sedang dipakai), tapi konsisten tervalidasi di setiap request.
 
 ---
 
@@ -310,4 +311,8 @@ Jalankan checklist ini setelah deploy sebelum menganggap tahap ini selesai. Bagi
 - [ ] (Tahap 5) Di form login Admin, klik **TAMPILKAN** pada password → teks password terlihat, tombol berubah jadi **SEMBUNYIKAN** → klik lagi, kembali tersembunyi
 - [ ] (Tahap 5) Klik **"Lupa Password?"** → jalankan `generateAdminResetCode()` dari editor Apps Script → catat kode 6 digit dari log/Executions → masukkan Username + kode + password baru di form Reset Password → berhasil → login pakai password baru berhasil, login pakai password lama ditolak
 - [ ] (Tahap 6) Absensi Masuk & Pulang tetap berjalan normal — perubahan ini murni di dalam kode, tidak ada yang terlihat beda di layar
+- [ ] (Fondasi Dashboard Relawan) Buat akun percobaan, login, lalu di Admin klik **Nonaktifkan** pada akun tsb → coba buka/refresh `profil.html` di sesi relawan yang sedang login → harus terlempar ke `login.html` dengan pesan "Akun Anda telah dinonaktifkan oleh Admin" → coba login lagi dengan akun itu → harus ditolak → klik **Aktifkan** di Admin → login lagi → berhasil
+- [ ] **(Modul Riwayat Absensi)** Setelah beberapa kali absen, buka menu Riwayat Absensi → 14 hari terakhir tampil dengan status yang benar, terbaru di atas
+- [ ] **(Modul Pengaturan Akun)** Buka Profil Saya → klik "Ganti password & pengaturan akun" → Status Akun & Login Terakhir tampil → ganti password berhasil dari sana (bukan lagi dari Profil)
+- [ ] **(Modul Bantuan)** Halaman Bantuan terbuka, semua bagian panduan bisa dibuka/tutup
 

@@ -11,20 +11,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const main = document.getElementById('profilMain');
 
-  document.getElementById('togglePwLama').addEventListener('click', function () {
-    togglePasswordVisibility('inputPasswordLama', this);
-  });
-  document.getElementById('togglePwBaru').addEventListener('click', function () {
-    togglePasswordVisibility('inputPasswordBaru2', this);
-  });
-
-  function togglePasswordVisibility(inputId, btn) {
-    const input = document.getElementById(inputId);
-    const tampil = input.type === 'password';
-    input.type = tampil ? 'text' : 'password';
-    btn.textContent = tampil ? 'SEMBUNYIKAN' : 'TAMPILKAN';
-  }
-
   async function muatProfil() {
     try {
       showLoading('Memuat profil...');
@@ -42,8 +28,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       main.style.display = 'block';
     } catch (err) {
       hideLoading();
-      // Sesi kedaluwarsa / tidak valid → kembali ke login, bukan tampil error kosong.
+      // Sesi kedaluwarsa ATAU akun baru saja dinonaktifkan Admin → kembali ke
+      // login, tapi bawa pesannya supaya relawan tahu alasannya, bukan
+      // tampilan form kosong yang membingungkan.
       hapusSesiRelawan();
+      simpanNotisLogin(err.message || 'Sesi telah berakhir. Silakan login kembali.');
       window.location.href = 'login.html';
     }
   }
@@ -59,28 +48,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
       hideLoading();
       showSuccess('Profil berhasil disimpan.');
-    } catch (err) {
-      hideLoading();
-      showError(err.message);
-    }
-  });
-
-  document.getElementById('passwordForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const passwordLama = document.getElementById('inputPasswordLama').value;
-    const passwordBaru = document.getElementById('inputPasswordBaru2').value;
-
-    if (passwordBaru.length < 6) {
-      showError('Password baru minimal 6 karakter.');
-      return;
-    }
-
-    try {
-      showLoading('Mengganti password...');
-      await apiPost('gantiPasswordRelawan', { token: sesi.token, passwordLama, passwordBaru });
-      hideLoading();
-      showSuccess('Password berhasil diganti.');
-      document.getElementById('passwordForm').reset();
     } catch (err) {
       hideLoading();
       showError(err.message);

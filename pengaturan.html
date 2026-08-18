@@ -33,17 +33,62 @@
     </div>
   </header>
 
-  <main class="placeholder-main">
-    <div class="placeholder-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H9a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/></svg></div>
-    <h2>Pengaturan Akun</h2>
-    <p>Pengaturan akun relawan akan tersedia setelah sistem akun dikembangkan.</p>
-    <a href="index.html" class="placeholder-back">← Kembali ke Portal</a>
+  <main class="auth-main" id="pengaturanMain" style="display:none;">
+
+    <section class="auth-card">
+      <h2>Pengaturan Akun</h2>
+      <div class="profile-identity-list" style="margin-top:10px;">
+        <div class="profile-identity-row"><span>Status Akun</span><span id="statusAkun">—</span></div>
+        <div class="profile-identity-row"><span>Login Terakhir</span><span id="loginTerakhir">—</span></div>
+      </div>
+    </section>
+
+    <p class="profile-section-title">Keamanan</p>
+    <section class="auth-card">
+      <form id="passwordForm" novalidate>
+        <div class="form-card">
+          <label for="inputPasswordLama" class="form-label">Password Saat Ini</label>
+          <div class="password-field">
+            <input type="password" id="inputPasswordLama" class="form-input" autocomplete="current-password" required>
+            <button type="button" class="password-toggle" id="togglePwLama">TAMPILKAN</button>
+          </div>
+        </div>
+        <div class="form-card">
+          <label for="inputPasswordBaru2" class="form-label">Password Baru</label>
+          <div class="password-field">
+            <input type="password" id="inputPasswordBaru2" class="form-input" autocomplete="new-password" minlength="6" required>
+            <button type="button" class="password-toggle" id="togglePwBaru">TAMPILKAN</button>
+          </div>
+        </div>
+        <button type="submit" id="btnGantiPassword" class="btn-outline">Ganti Password</button>
+      </form>
+    </section>
+
+    <section class="auth-card">
+      <button type="button" id="btnKeluar" class="btn-danger-outline">Keluar</button>
+    </section>
+
+    <p style="text-align:center;margin-top:16px;">
+      <a href="profil.html" class="admin-link">← Kembali ke Profil</a>
+    </p>
   </main>
+
+  <div class="toast is-hidden" id="errorToast" role="alert"></div>
+
+  <div class="loading-overlay is-hidden" id="loadingOverlay">
+    <div class="spinner"></div>
+    <p id="loadingText">Memuat pengaturan...</p>
+  </div>
 
   <footer class="site-footer">
     <p><strong>SPPG JEUNGJING</strong> · Portal Relawan</p>
     <p class="credit">© 2026 SPPG Jeungjing · Developed by Fatur Rizky Fahriansyah</p>
   </footer>
 </div>
+
+<script src="config.js"></script>
+<script src="common.js"></script>
+<script src="auth-relawan.js"></script>
+<script src="pengaturan.js"></script>
 </body>
 </html>

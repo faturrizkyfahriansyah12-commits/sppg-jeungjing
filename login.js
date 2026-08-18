@@ -15,6 +15,13 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
+  // Tampilkan pesan kalau relawan baru saja "dilempar" ke sini karena sesi
+  // berakhir atau akunnya dinonaktifkan Admin (lihat profil.js).
+  const notisLogin = ambilDanHapusNotisLogin();
+  if (notisLogin) {
+    showError(notisLogin);
+  }
+
   // Menyimpan sementara password lama yang baru saja dipakai login,
   // dibutuhkan untuk memanggil gantiPasswordRelawan (bukan disimpan permanen).
   let sesiSementara = null;
