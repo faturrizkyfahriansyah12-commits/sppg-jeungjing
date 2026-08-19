@@ -33,25 +33,35 @@ SPPG-JEUNGJING-ABSENSI/
 │
 ├── index.html              # Portal Relawan (halaman utama saat website dibuka)
 ├── absensi.html             # Halaman absensi relawan (tujuan QR Code, dulunya index.html)
-├── login.html                # Login relawan (Tahap 3)
-├── profil.html                 # Profil relawan — lihat identitas, ubah No HP/Email/password (Tahap 4)
-├── admin.html                    # Dashboard admin (dilindungi login)
-├── qrcode.html                     # Halaman cetak QR Code (untuk admin) — mengarah ke absensi.html
+├── login.html                # Login relawan
+├── profil.html                 # Profil relawan — identitas, ubah No HP/Email
+├── pengaturan.html               # Pengaturan Akun — status, login terakhir, menu Ganti Password, keluar (Modul #3)
+├── ganti-password.html             # Ganti Password — halaman tersendiri, terpisah dari Pengaturan Akun
+├── riwayat.html                    # Riwayat Absensi — 14 hari terakhir milik sendiri (Modul #2)
+├── informasi.html                    # Pusat Informasi — daftar pengumuman aktif (Modul #4)
+├── jadwal.html                         # Jadwal & Penugasan — milik sendiri + broadcast (Modul #5)
+├── bantuan.html                          # Panduan, kendala, FAQ, kontak admin
+├── admin.html                              # Dashboard admin (dilindungi login)
+├── qrcode.html                               # Halaman cetak QR Code (untuk admin) — mengarah ke absensi.html
 │
-├── riwayat.html, jadwal.html, informasi.html,
-│   notifikasi.html, pengaturan.html, bantuan.html      # Placeholder menu Portal (fase berikutnya)
+├── notifikasi.html      # Masih placeholder — Modul Notifikasi belum dikerjakan
 │
 ├── style.css                  # Desain utama (dipakai halaman Absensi & Admin)
-├── portal.css                  # Desain khusus Portal, Login, Profil & halaman placeholder
+├── portal.css                  # Desain khusus Portal & seluruh halaman relawan
 ├── admin.css                    # Style tambahan khusus dashboard
 │
 ├── config.js                    # 1 tempat untuk mengisi URL Apps Script
 ├── common.js                     # Fungsi API bersama (dipakai semua halaman .js)
-├── auth-relawan.js                # Sesi login relawan (dipakai login.js & profil.js)
+├── auth-relawan.js                # Sesi login relawan (dipakai semua halaman relawan)
 ├── script.js                       # Logic halaman absensi (absensi.html)
 ├── login.js                          # Logic halaman login relawan
 ├── profil.js                          # Logic halaman profil relawan
-├── admin.js                             # Logic dashboard admin
+├── pengaturan.js                        # Logic halaman Pengaturan Akun
+├── ganti-password.js                      # Logic halaman Ganti Password
+├── riwayat.js                             # Logic halaman Riwayat Absensi
+├── informasi.js                             # Logic halaman Informasi
+├── jadwal.js                                  # Logic halaman Jadwal & Penugasan
+├── admin.js                                     # Logic dashboard admin
 │
 ├── assets/
 │   ├── logo.png                    # Logo resmi SPPG Jeungjing (latar transparan)
@@ -66,15 +76,19 @@ SPPG-JEUNGJING-ABSENSI/
 │   ├── 05_REKAP_BULANAN.csv                # Hanya header (historis, tidak lagi jadi tab utama — lihat Bagian 9)
 │   ├── 06_ADMIN.csv                         # Hanya header
 │   ├── 07_AKUN_RELAWAN.csv                   # Hanya header — akun login relawan (Tahap 2-4)
-│   └── 08_REKAP_2_MINGGU.csv                  # Hanya header — rekap periode gajian 2 mingguan
+│   ├── 08_REKAP_2_MINGGU.csv                  # Hanya header — rekap periode gajian 2 mingguan
+│   ├── 09_INFORMASI.csv                        # Hanya header — pengumuman/informasi (Modul #4)
+│   └── 10_JADWAL.csv                            # Hanya header — jadwal & penugasan (Modul #5)
 │
 ├── google-apps-script/                        # Kode backend — disalin ke script.google.com
 │   ├── Code.gs                                  # Routing utama (doGet / doPost)
 │   ├── Utils.gs                                  # Konfigurasi & fungsi bantuan
 │   ├── Relawan.gs                                 # Data relawan & divisi
 │   ├── Akun.gs                                     # Akun, login & profil relawan (Tahap 2-4)
-│   ├── Absensi.gs                                  # Absensi, cegah duplikasi, rekap
-│   └── Admin.gs                                     # Login admin & sesi
+│   ├── Absensi.gs                                  # Absensi, cegah duplikasi, rekap, riwayat pribadi
+│   ├── Admin.gs                                     # Login admin & sesi
+│   ├── Informasi.gs                                  # Pusat Informasi (Modul #4)
+│   └── Jadwal.gs                                      # Jadwal & Penugasan (Modul #5)
 │
 └── README.md                                          # Dokumen ini
 ```
@@ -215,18 +229,22 @@ Langkah mengisi absensi:
 2. **Rekap Harian** — pilih tanggal, lihat status tiap relawan (Hadir/Terlambat/Izin/Sakit/Belum Absen), filter per divisi/status, export CSV.
 3. **Rekap 2 Minggu** — pilih periode (tanggal awal & akhir, default otomatis ke periode 1-14 atau 15-akhir bulan berjalan sesuai tanggal hari ini), lihat rekap Hadir/Terlambat/Izin/Sakit/Tidak Hadir/Total Hari Kerja per relawan, export CSV. Ini menggantikan Rekap Bulanan sebagai tab utama karena gajian berjalan tiap 2 minggu — data Rekap Bulanan lama tetap tersimpan di sheet `05_REKAP_BULANAN` (tidak dihapus), hanya sudah tidak ditampilkan sebagai tab.
 4. **Kelola Relawan** — tambah relawan baru (ID dibuat otomatis), ubah nama, pindah divisi, aktifkan/nonaktifkan relawan.
-5. **Akun Relawan** (Tahap 2) — buat akun login untuk relawan yang sudah ada di Kelola Relawan: klik **+ Buat Akun**, isi username (sudah disarankan otomatis) & No HP, lalu **Buat**. Password sementara akan muncul **satu kali saja** — catat dan sampaikan langsung ke relawan. Tombol **Reset Password** dipakai jika relawan lupa password atau perangkatnya hilang.
+5. **Akun Relawan** (Tahap 2) — buat akun login untuk relawan yang sudah ada di Kelola Relawan: klik **+ Buat Akun**, isi username (sudah disarankan otomatis) & No HP, lalu **Buat**. Password sementara akan muncul **satu kali saja** — catat dan sampaikan langsung ke relawan. Tombol **Reset Password** dipakai jika relawan lupa password atau perangkatnya hilang. Tombol **Aktifkan/Nonaktifkan** mengontrol apakah relawan tsb bisa login — relawan yang dinonaktifkan langsung ditolak pada aksi berikutnya, bukan menunggu sesi kedaluwarsa.
 6. **Kelola Divisi** — tambah divisi baru; otomatis muncul di form absensi tanpa perlu mengubah kode.
+7. **Informasi** — tulis Judul & Isi, klik **+ Tambah Informasi**. Muncul langsung ke semua relawan. Tombol **Edit** untuk ubah isi, tombol **Nonaktifkan** untuk menyembunyikan dari relawan tanpa menghapus datanya (bisa diaktifkan lagi kapan saja).
+8. **Jadwal & Penugasan** — isi Tanggal, Waktu, pilih **Relawan** (satu orang tertentu, atau "Semua Relawan" untuk broadcast), Penugasan, Keterangan, dan Status. Relawan hanya melihat jadwal miliknya sendiri + jadwal untuk "Semua Relawan". Tombol **Hapus** menghapus permanen (beda dari Informasi/Akun yang hanya dinonaktifkan — jadwal memang didesain bisa dihapus sesuai kebutuhan).
 
 ---
 
-## 9a. Panduan Penggunaan — Login & Profil Relawan (Tahap 2-4)
+## 9a. Panduan Penggunaan — Login & Dashboard Relawan
 
 1. Relawan membuka `login.html` (tautan **Profil Saya** di Portal), masuk dengan username & password yang diberikan Admin.
 2. **Login pertama**: sistem akan meminta relawan membuat password baru sebelum melanjutkan (password sementara dari Admin tidak bisa dipakai terus-menerus).
-3. Setelah masuk, relawan diarahkan ke `profil.html`: melihat identitas resmi (ID, Nama, Divisi, Status — tidak bisa diubah sendiri), melengkapi No HP & Email, dan mengganti password kapan saja.
-4. Sesi tersimpan di HP relawan (maks. 6 jam, sama seperti sesi Admin) — perlu login ulang setelah itu.
-5. **Penting**: modul ini masih berdiri sendiri dari sistem Absensi — login belum menggantikan alur pilih-Divisi-pilih-Nama di halaman Absensi. Menghubungkan keduanya direncanakan pada tahap berikutnya (Fase 7 di roadmap Anda).
+3. Setelah masuk, relawan diarahkan ke `profil.html`: melihat identitas resmi (ID, Nama, Divisi, Status — tidak bisa diubah sendiri), melengkapi No HP & Email.
+4. Dari Profil, relawan bisa membuka menu **Pengaturan Akun** (kartu menu, bukan link kecil) untuk: **Ganti Password** (halaman tersendiri), dan melihat Status Akun & Login Terakhir. Setiap halaman turunan (Pengaturan Akun, Ganti Password) punya tombol **← Kembali** di bagian atas, bukan di bawah halaman.
+5. Menu Portal lain yang sudah aktif: **Riwayat Absensi** (14 hari terakhir milik sendiri), **Informasi** (pengumuman dari Admin), **Jadwal & Penugasan** (milik sendiri + yang ditujukan ke semua relawan), **Bantuan** (panduan & FAQ).
+6. Sesi tersimpan di HP relawan (maks. 6 jam, sama seperti sesi Admin) — perlu login ulang setelah itu. Kalau akun dinonaktifkan Admin saat sedang login, relawan otomatis diarahkan ke login dengan pesan yang jelas pada aksi berikutnya (buka halaman, simpan data, dst.).
+7. **Penting**: modul akun ini masih berdiri sendiri dari sistem Absensi — login belum menggantikan alur pilih-Divisi-pilih-Nama di halaman Absensi. Menghubungkan keduanya direncanakan pada tahap berikutnya (Fase 7 di roadmap Anda).
 
 ---
 
@@ -315,4 +333,7 @@ Jalankan checklist ini setelah deploy sebelum menganggap tahap ini selesai. Bagi
 - [ ] **(Modul Riwayat Absensi)** Setelah beberapa kali absen, buka menu Riwayat Absensi → 14 hari terakhir tampil dengan status yang benar, terbaru di atas
 - [ ] **(Modul Pengaturan Akun)** Buka Profil Saya → klik "Ganti password & pengaturan akun" → Status Akun & Login Terakhir tampil → ganti password berhasil dari sana (bukan lagi dari Profil)
 - [ ] **(Modul Bantuan)** Halaman Bantuan terbuka, semua bagian panduan bisa dibuka/tutup
+- [ ] **(Modul Informasi)** Admin tambah informasi → langsung tampil ke relawan di halaman Informasi, terbaru di atas. Nonaktifkan dari Admin → hilang dari tampilan relawan tapi tidak terhapus datanya
+- [ ] **(Modul Jadwal & Penugasan)** Admin tambah jadwal untuk relawan tertentu → hanya relawan itu yang melihatnya. Tambah jadwal untuk "Semua Relawan" → semua relawan melihatnya. Hapus jadwal → hilang permanen dari semua orang
+- [ ] **(UI Pengaturan Akun)** Buka Profil Saya → tampil 2 kartu menu ("Ganti Password" dan "Pengaturan Akun"), bukan link kecil seperti sebelumnya. Klik "Pengaturan Akun" → halaman punya tombol "← Kembali" di atas (bukan di bawah), lalu klik "Ganti Password" di sana → berhasil ganti password dari halaman tersendiri
 

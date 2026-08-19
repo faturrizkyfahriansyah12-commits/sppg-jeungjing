@@ -1,6 +1,7 @@
 // SPPG JEUNGJING — LOGIC HALAMAN PENGATURAN AKUN (pengaturan.html)
 // Menggunakan fungsi bersama dari common.js (apiGet, apiPost, dst.)
 // dan auth-relawan.js (ambilSesiRelawan, dst.)
+// Ganti Password kini halaman terpisah — lihat ganti-password.js.
 
 function formatTanggalWaktuIndo(isoString) {
   if (!isoString) return 'Belum pernah login';
@@ -20,20 +21,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const main = document.getElementById('pengaturanMain');
 
-  document.getElementById('togglePwLama').addEventListener('click', function () {
-    togglePasswordVisibility('inputPasswordLama', this);
-  });
-  document.getElementById('togglePwBaru').addEventListener('click', function () {
-    togglePasswordVisibility('inputPasswordBaru2', this);
-  });
-
-  function togglePasswordVisibility(inputId, btn) {
-    const input = document.getElementById(inputId);
-    const tampil = input.type === 'password';
-    input.type = tampil ? 'text' : 'password';
-    btn.textContent = tampil ? 'SEMBUNYIKAN' : 'TAMPILKAN';
-  }
-
   async function muatPengaturan() {
     try {
       showLoading('Memuat pengaturan...');
@@ -51,28 +38,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       window.location.href = 'login.html';
     }
   }
-
-  document.getElementById('passwordForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const passwordLama = document.getElementById('inputPasswordLama').value;
-    const passwordBaru = document.getElementById('inputPasswordBaru2').value;
-
-    if (passwordBaru.length < 6) {
-      showError('Password baru minimal 6 karakter.');
-      return;
-    }
-
-    try {
-      showLoading('Mengganti password...');
-      await apiPost('gantiPasswordRelawan', { token: sesi.token, passwordLama, passwordBaru });
-      hideLoading();
-      showSuccess('Password berhasil diganti.');
-      document.getElementById('passwordForm').reset();
-    } catch (err) {
-      hideLoading();
-      showError(err.message);
-    }
-  });
 
   document.getElementById('btnKeluar').addEventListener('click', async () => {
     try {

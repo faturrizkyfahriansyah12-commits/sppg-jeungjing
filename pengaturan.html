@@ -33,44 +33,35 @@
     </div>
   </header>
 
+  <div class="page-subheader">
+    <a href="profil.html" class="page-subheader-back">← Kembali</a>
+    <h2 class="page-subheader-title">Pengaturan Akun</h2>
+  </div>
+
   <main class="auth-main" id="pengaturanMain" style="display:none;">
 
     <section class="auth-card">
-      <h2>Pengaturan Akun</h2>
-      <div class="profile-identity-list" style="margin-top:10px;">
+      <div class="profile-identity-list">
         <div class="profile-identity-row"><span>Status Akun</span><span id="statusAkun">—</span></div>
         <div class="profile-identity-row"><span>Login Terakhir</span><span id="loginTerakhir">—</span></div>
       </div>
     </section>
 
-    <p class="profile-section-title">Keamanan</p>
-    <section class="auth-card">
-      <form id="passwordForm" novalidate>
-        <div class="form-card">
-          <label for="inputPasswordLama" class="form-label">Password Saat Ini</label>
-          <div class="password-field">
-            <input type="password" id="inputPasswordLama" class="form-input" autocomplete="current-password" required>
-            <button type="button" class="password-toggle" id="togglePwLama">TAMPILKAN</button>
-          </div>
-        </div>
-        <div class="form-card">
-          <label for="inputPasswordBaru2" class="form-label">Password Baru</label>
-          <div class="password-field">
-            <input type="password" id="inputPasswordBaru2" class="form-input" autocomplete="new-password" minlength="6" required>
-            <button type="button" class="password-toggle" id="togglePwBaru">TAMPILKAN</button>
-          </div>
-        </div>
-        <button type="submit" id="btnGantiPassword" class="btn-outline">Ganti Password</button>
-      </form>
-    </section>
+    <p class="settings-section-title">Keamanan &amp; Preferensi</p>
+    <nav class="settings-menu-list" aria-label="Menu Pengaturan Akun">
+      <a href="ganti-password.html" class="settings-menu-item">
+        <span class="settings-menu-item-icon">🔐</span>
+        <span class="settings-menu-item-text">
+          <p class="settings-menu-item-title">Ganti Password</p>
+          <p class="settings-menu-item-desc">Ubah password akun Anda</p>
+        </span>
+        <span class="settings-menu-item-arrow">→</span>
+      </a>
+    </nav>
 
     <section class="auth-card">
       <button type="button" id="btnKeluar" class="btn-danger-outline">Keluar</button>
     </section>
-
-    <p style="text-align:center;margin-top:16px;">
-      <a href="profil.html" class="admin-link">← Kembali ke Profil</a>
-    </p>
   </main>
 
   <div class="toast is-hidden" id="errorToast" role="alert"></div>
