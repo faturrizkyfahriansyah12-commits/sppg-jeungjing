@@ -13,7 +13,9 @@
     relawanList: [],   // semua relawan (aktif + nonaktif), untuk tab "Kelola Relawan"
     rekapHarian: [],
     rekapDuaMinggu: [],
-    akunList: []        // status akun relawan, untuk tab "Akun Relawan"
+    akunList: [],        // status akun relawan, untuk tab "Akun Relawan"
+    informasiList: [],    // untuk tab "Informasi"
+    jadwalList: []          // untuk tab "Jadwal & Penugasan"
   };
 
   const el = {
@@ -79,7 +81,21 @@
     akunPasswordAlert: document.getElementById('akunPasswordAlert'),
     akunPasswordAlertText: document.getElementById('akunPasswordAlertText'),
     btnSalinPassword: document.getElementById('btnSalinPassword'),
-    btnTutupPasswordAlert: document.getElementById('btnTutupPasswordAlert')
+    btnTutupPasswordAlert: document.getElementById('btnTutupPasswordAlert'),
+
+    formTambahInformasi: document.getElementById('formTambahInformasi'),
+    inputJudulInformasi: document.getElementById('inputJudulInformasi'),
+    inputIsiInformasi: document.getElementById('inputIsiInformasi'),
+    listInformasiAdmin: document.getElementById('listInformasiAdmin'),
+
+    formTambahJadwal: document.getElementById('formTambahJadwal'),
+    inputTanggalJadwal: document.getElementById('inputTanggalJadwal'),
+    inputWaktuJadwal: document.getElementById('inputWaktuJadwal'),
+    selectRelawanJadwal: document.getElementById('selectRelawanJadwal'),
+    inputPenugasanJadwal: document.getElementById('inputPenugasanJadwal'),
+    inputKeteranganJadwal: document.getElementById('inputKeteranganJadwal'),
+    selectStatusJadwal: document.getElementById('selectStatusJadwal'),
+    tbodyJadwal: document.getElementById('tbodyJadwal')
   };
 
   // ===== LOGIN / LOGOUT =====
@@ -178,24 +194,32 @@
   async function initDashboard() {
     showLoading('Memuat data dashboard...');
     try {
-      const [divisiList, relawanList, akunList] = await Promise.all([
+      const [divisiList, relawanList, akunList, informasiList, jadwalList] = await Promise.all([
         apiGet('getDivisi'),
         apiGet('getRelawan', { semua: '1' }),
-        apiGet('getAkunRelawanList', { token: authToken })
+        apiGet('getAkunRelawanList', { token: authToken }),
+        apiGet('getInformasiListAdmin', { token: authToken }),
+        apiGet('getJadwalListAdmin', { token: authToken })
       ]);
       cache.divisiList = divisiList;
       cache.relawanList = relawanList;
       cache.akunList = akunList;
+      cache.informasiList = informasiList;
+      cache.jadwalList = jadwalList;
       fillDivisiSelects();
+      fillRelawanJadwalSelect();
       renderRelawanTable();
       renderDivisiTable();
       renderAkunTable();
+      renderInformasiAdmin();
+      renderJadwalTable();
 
       const now = new Date();
       el.filterTanggal.value = toDateInputValue(now);
       const periodeDefault = defaultPeriodeDuaMinggu(now);
       el.filterPeriodeAwal.value = toDateInputValue(periodeDefault.awal);
       el.filterPeriodeAkhir.value = toDateInputValue(periodeDefault.akhir);
+      el.inputTanggalJadwal.value = toDateInputValue(now);
 
       await muatRekapHarian();
     } catch (err) {
@@ -203,6 +227,12 @@
     } finally {
       hideLoading();
     }
+  }
+
+  function fillRelawanJadwalSelect() {
+    const relawanAktif = cache.relawanList.filter(r => (r.status || 'AKTIF') === 'AKTIF');
+    el.selectRelawanJadwal.innerHTML = '<option value="SEMUA">Semua Relawan</option>' +
+      relawanAktif.map(r => `<option value="${escapeHtml(r.id)}">${escapeHtml(r.nama)}</option>`).join('');
   }
 
   function fillDivisiSelects() {
@@ -696,5 +726,161 @@
   [el.cariAkun, el.filterStatusAkun].forEach(elm => {
     elm.addEventListener('input', renderAkunTable);
     elm.addEventListener('change', renderAkunTable);
+  });
+
+  // ===== INFORMASI (Modul #4) =====
+  async function muatUlangInformasi() {
+    cache.informasiList = await apiGet('getInformasiListAdmin', { token: authToken });
+    renderInformasiAdmin();
+  }
+
+  function renderInformasiAdmin() {
+    if (!cache.informasiList.length) {
+      el.listInformasiAdmin.innerHTML = `<div class="empty-state">Belum ada informasi.</div>`;
+      return;
+    }
+    el.listInformasiAdmin.innerHTML = cache.informasiList.map(i => `
+      <div class="info-card" data-id="${escapeHtml(i.id)}">
+        <p class="info-card-date">${escapeHtml(i.tanggal)} · <span class="badge ${i.status === 'AKTIF' ? 'aktif' : 'akun-nonaktif'}">${i.status === 'AKTIF' ? 'Aktif' : 'Nonaktif'}</span></p>
+        <h3 class="info-card-title">${escapeHtml(i.judul)}</h3>
+        <p class="info-card-body">${escapeHtml(i.isi)}</p>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <button type="button" class="btn-mini btn-edit-informasi">Edit</button>
+          <button type="button" class="btn-mini btn-toggle-informasi" data-status-baru="${i.status === 'AKTIF' ? 'NONAKTIF' : 'AKTIF'}">${i.status === 'AKTIF' ? 'Nonaktifkan' : 'Aktifkan'}</button>
+        </div>
+      </div>`).join('');
+
+    el.listInformasiAdmin.querySelectorAll('.btn-edit-informasi').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const card = btn.closest('.info-card');
+        const id = card.dataset.id;
+        const info = cache.informasiList.find(i => i.id === id);
+        card.innerHTML = `
+          <form class="akun-inline-form" style="flex-direction:column;align-items:stretch;gap:8px;">
+            <input type="text" class="edit-judul-informasi" value="${escapeHtml(info.judul)}" required>
+            <textarea class="edit-isi-informasi" rows="3" style="font-family:inherit;padding:10px 12px;border-radius:8px;border:1.5px solid var(--color-border);font-size:13.5px;resize:vertical;" required>${escapeHtml(info.isi)}</textarea>
+            <div style="display:flex;gap:8px;">
+              <button type="submit" class="btn-mini primary">Simpan</button>
+              <button type="button" class="btn-mini btn-batal-edit-informasi">Batal</button>
+            </div>
+          </form>`;
+        card.querySelector('form').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          showLoading('Menyimpan informasi...');
+          try {
+            await apiPost('updateInformasi', {
+              token: authToken, id,
+              judul: card.querySelector('.edit-judul-informasi').value.trim(),
+              isi: card.querySelector('.edit-isi-informasi').value.trim()
+            });
+            await muatUlangInformasi();
+          } catch (err) {
+            showError(err.message || 'Gagal menyimpan informasi.');
+          } finally {
+            hideLoading();
+          }
+        });
+        card.querySelector('.btn-batal-edit-informasi').addEventListener('click', renderInformasiAdmin);
+      });
+    });
+
+    el.listInformasiAdmin.querySelectorAll('.btn-toggle-informasi').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.closest('.info-card').dataset.id;
+        const statusBaru = btn.dataset.statusBaru;
+        showLoading('Mengubah status...');
+        try {
+          await apiPost('updateStatusInformasi', { token: authToken, id, statusBaru });
+          await muatUlangInformasi();
+        } catch (err) {
+          showError(err.message || 'Gagal mengubah status.');
+        } finally {
+          hideLoading();
+        }
+      });
+    });
+  }
+
+  el.formTambahInformasi.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    showLoading('Menambah informasi...');
+    try {
+      await apiPost('addInformasi', {
+        token: authToken,
+        judul: el.inputJudulInformasi.value.trim(),
+        isi: el.inputIsiInformasi.value.trim()
+      });
+      el.formTambahInformasi.reset();
+      await muatUlangInformasi();
+      showSuccess('Informasi berhasil ditambahkan.');
+    } catch (err) {
+      showError(err.message || 'Gagal menambah informasi.');
+    } finally {
+      hideLoading();
+    }
+  });
+
+  // ===== JADWAL & PENUGASAN (Modul #5) =====
+  async function muatUlangJadwal() {
+    cache.jadwalList = await apiGet('getJadwalListAdmin', { token: authToken });
+    renderJadwalTable();
+  }
+
+  function renderJadwalTable() {
+    if (!cache.jadwalList.length) {
+      el.tbodyJadwal.innerHTML = `<tr><td colspan="6"><div class="empty-state">Belum ada jadwal.</div></td></tr>`;
+      return;
+    }
+    el.tbodyJadwal.innerHTML = cache.jadwalList.map(j => `
+      <tr data-id="${escapeHtml(j.id)}">
+        <td>${escapeHtml(j.tanggal)}<br><span style="font-size:11px;color:var(--color-text-muted);">${escapeHtml(j.hari || '')}</span></td>
+        <td>${escapeHtml(j.waktu || '-')}</td>
+        <td>${escapeHtml(j.namaRelawan)}</td>
+        <td>${escapeHtml(j.penugasan)}${j.keterangan ? `<br><span style="font-size:11px;color:var(--color-text-muted);">${escapeHtml(j.keterangan)}</span>` : ''}</td>
+        <td><span class="badge ${j.status === 'Selesai' ? 'aktif' : j.status === 'Dibatalkan' ? 'nonaktif' : 'izin'}">${escapeHtml(j.status)}</span></td>
+        <td>
+          <button type="button" class="btn-mini btn-hapus-jadwal">Hapus</button>
+        </td>
+      </tr>`).join('');
+
+    el.tbodyJadwal.querySelectorAll('.btn-hapus-jadwal').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.closest('tr').dataset.id;
+        if (!confirm('Hapus jadwal ini? Tidak bisa dibatalkan.')) return;
+        showLoading('Menghapus jadwal...');
+        try {
+          await apiPost('deleteJadwal', { token: authToken, id });
+          await muatUlangJadwal();
+        } catch (err) {
+          showError(err.message || 'Gagal menghapus jadwal.');
+        } finally {
+          hideLoading();
+        }
+      });
+    });
+  }
+
+  el.formTambahJadwal.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    showLoading('Menambah jadwal...');
+    try {
+      await apiPost('addJadwal', {
+        token: authToken,
+        tanggal: el.inputTanggalJadwal.value,
+        waktu: el.inputWaktuJadwal.value,
+        idRelawan: el.selectRelawanJadwal.value,
+        penugasan: el.inputPenugasanJadwal.value.trim(),
+        keterangan: el.inputKeteranganJadwal.value.trim(),
+        status: el.selectStatusJadwal.value
+      });
+      el.formTambahJadwal.reset();
+      el.inputTanggalJadwal.value = toDateInputValue(new Date());
+      await muatUlangJadwal();
+      showSuccess('Jadwal berhasil ditambahkan.');
+    } catch (err) {
+      showError(err.message || 'Gagal menambah jadwal.');
+    } finally {
+      hideLoading();
+    }
   });
 })();

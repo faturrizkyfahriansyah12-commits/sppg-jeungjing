@@ -349,3 +349,95 @@
   margin-top: 6px;
 }
 .bantuan-contact p { margin: 0 0 10px; font-size: 13px; color: var(--color-navy); }
+
+/* ============================================================
+   INFORMASI (Modul #4)
+============================================================ */
+.info-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+.info-card-date { font-size: 11px; color: var(--color-text-muted); margin-bottom: 4px; }
+.info-card-title { font-size: 14px; font-weight: 700; color: var(--color-navy); margin: 0 0 6px; }
+.info-card-body { font-size: 13px; color: var(--color-text); line-height: 1.6; white-space: pre-wrap; }
+
+/* ============================================================
+   JADWAL & PENUGASAN (Modul #5)
+============================================================ */
+.jadwal-card {
+  display: flex; gap: 14px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+.jadwal-card-date { flex-shrink: 0; width: 58px; text-align: center; }
+.jadwal-card-day { display: block; font-size: 10.5px; color: var(--color-text-muted); text-transform: uppercase; }
+.jadwal-card-num { display: block; font-size: 15px; font-weight: 800; color: var(--color-navy); margin-top: 1px; }
+.jadwal-card-time { display: block; font-size: 11px; color: var(--color-sky-deep); font-weight: 700; margin-top: 4px; }
+.jadwal-card-body { flex: 1; min-width: 0; }
+.jadwal-card-title { font-size: 13.5px; font-weight: 700; color: var(--color-navy); margin: 0 0 4px; }
+.jadwal-card-ket { font-size: 12px; color: var(--color-text-muted); margin: 0 0 6px; }
+.jadwal-card-status { display: inline-block; padding: 3px 10px; border-radius: var(--radius-pill); font-size: 10.5px; font-weight: 700; }
+.jadwal-card-status.Terjadwal { background: var(--color-info-bg); color: var(--color-info); }
+.jadwal-card-status.Selesai { background: var(--color-success-bg); color: var(--color-success); }
+.jadwal-card-status.Dibatalkan { background: var(--color-muted-bg); color: var(--color-muted-text); }
+
+/* ============================================================
+   MENU PENGATURAN (kartu pilihan, dipakai di Profil & Pengaturan Akun)
+============================================================ */
+.settings-section-title {
+  font-size: 13px; font-weight: 700; color: var(--color-text-muted);
+  text-transform: uppercase; letter-spacing: .04em;
+  margin: 18px 4px 10px;
+}
+.settings-menu-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+.settings-menu-item {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  text-decoration: none;
+  color: var(--color-text);
+  transition: transform .12s ease;
+}
+.settings-menu-item:active { transform: scale(0.98); }
+.settings-menu-item-icon {
+  flex-shrink: 0; width: 42px; height: 42px;
+  border-radius: var(--radius-pill);
+  background: var(--color-sky-soft);
+  color: var(--color-sky-deep);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 19px;
+}
+.settings-menu-item-text { flex: 1; min-width: 0; }
+.settings-menu-item-title { font-size: 14px; font-weight: 700; color: var(--color-navy); margin: 0; }
+.settings-menu-item-desc { font-size: 12px; color: var(--color-text-muted); margin: 2px 0 0; }
+.settings-menu-item-arrow { flex-shrink: 0; color: var(--color-text-muted); font-size: 16px; }
+
+/* ============================================================
+   SUBHEADER NAVIGASI (untuk halaman turunan, mis. Pengaturan Akun, Ganti Password)
+============================================================ */
+.page-subheader {
+  display: flex; align-items: center; gap: 12px;
+  max-width: var(--max-width); margin: 0 auto;
+  padding: 16px 16px 0;
+  position: relative; z-index: 1;
+}
+.page-subheader-back {
+  display: inline-flex; align-items: center; gap: 5px;
+  flex-shrink: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: 8px 14px;
+  color: var(--color-navy);
+  font-size: 12.5px; font-weight: 700;
+  text-decoration: none;
+}
+.page-subheader-title { font-size: 16px; font-weight: 800; color: var(--color-navy); margin: 0; }
